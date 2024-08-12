@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("powerplant-coding-challenge")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c36f19729c02431ae6d83b18d2e611c349954584")]
 [assembly: System.Reflection.AssemblyProductAttribute("powerplant-coding-challenge")]
 [assembly: System.Reflection.AssemblyTitleAttribute("powerplant-coding-challenge")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

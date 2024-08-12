@@ -1,10 +1,38 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\tonyv\\source\\repos\\powerplant-coding-challenge\\",
+  "WorkspaceRootPath": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\users\\tonyv\\source\\repos\\powerplant-coding-challenge\\powerplant-coding-challenge\\controllers\\productionplancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\controllers\\productionplancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\controllers\\productionplancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\middleware\\exceptionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\middleware\\exceptionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\models\\fuels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\models\\fuels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\models\\powerplant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\models\\powerplant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\productionplan\\productionplancommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\productionplan\\productionplancommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\productionplan\\productionplancommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\productionplan\\productionplancommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\productionplan\\productionplancommandresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\productionplan\\productionplancommandresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\productionplan\\productionplancommandvalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\productionplan\\productionplancommandvalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -24,13 +52,104 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "ProductionPlanController.cs",
-              "DocumentMoniker": "C:\\Users\\tonyv\\source\\repos\\powerplant-coding-challenge\\powerplant-coding-challenge\\Controllers\\ProductionPlanController.cs",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Controllers\\ProductionPlanController.cs",
               "RelativeDocumentMoniker": "powerplant-coding-challenge\\Controllers\\ProductionPlanController.cs",
-              "ToolTip": "C:\\Users\\tonyv\\source\\repos\\powerplant-coding-challenge\\powerplant-coding-challenge\\Controllers\\ProductionPlanController.cs",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Controllers\\ProductionPlanController.cs",
               "RelativeToolTip": "powerplant-coding-challenge\\Controllers\\ProductionPlanController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAABAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-12T07:22:24.68Z",
+              "WhenOpened": "2024-08-12T15:28:26.438Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ExceptionHandler.cs",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Middleware\\ExceptionHandler.cs",
+              "RelativeDocumentMoniker": "powerplant-coding-challenge\\Middleware\\ExceptionHandler.cs",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Middleware\\ExceptionHandler.cs",
+              "RelativeToolTip": "powerplant-coding-challenge\\Middleware\\ExceptionHandler.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-12T15:28:17.641Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Fuels.cs",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Models\\Fuels.cs",
+              "RelativeDocumentMoniker": "powerplant-coding-challenge\\Models\\Fuels.cs",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Models\\Fuels.cs",
+              "RelativeToolTip": "powerplant-coding-challenge\\Models\\Fuels.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-12T15:28:15.455Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Powerplant.cs",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Models\\Powerplant.cs",
+              "RelativeDocumentMoniker": "powerplant-coding-challenge\\Models\\Powerplant.cs",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Models\\Powerplant.cs",
+              "RelativeToolTip": "powerplant-coding-challenge\\Models\\Powerplant.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-12T15:28:10.362Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ProductionPlanCommand.cs",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommand.cs",
+              "RelativeDocumentMoniker": "powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommand.cs",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommand.cs",
+              "RelativeToolTip": "powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommand.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-12T15:28:07.077Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ProductionPlanCommandHandler.cs",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandHandler.cs",
+              "RelativeDocumentMoniker": "powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandHandler.cs",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandHandler.cs",
+              "RelativeToolTip": "powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandHandler.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAC0AAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-12T15:28:03.139Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ProductionPlanCommandResponse.cs",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandResponse.cs",
+              "RelativeDocumentMoniker": "powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandResponse.cs",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandResponse.cs",
+              "RelativeToolTip": "powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandResponse.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-12T15:28:00.273Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ProductionPlanCommandValidator.cs",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandValidator.cs",
+              "RelativeDocumentMoniker": "powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandValidator.cs",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandValidator.cs",
+              "RelativeToolTip": "powerplant-coding-challenge\\ProductionPlan\\ProductionPlanCommandValidator.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAADgAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-12T15:27:49.444Z",
               "EditorCaption": ""
             }
           ]

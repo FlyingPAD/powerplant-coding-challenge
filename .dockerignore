@@ -1,0 +1,22 @@
+# Ignore the .git directory (if using Git)
+.git
+
+# Ignore the .vs directory (Visual Studio)
+.vs
+
+# Ignore the bin and obj directories (build artifacts)
+**/bin
+**/obj
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore Docker-related files
+Dockerfile
+.dockerignore
+
+# Ignore logs
+logs/
