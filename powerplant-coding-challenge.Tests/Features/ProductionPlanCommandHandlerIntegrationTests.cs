@@ -5,6 +5,7 @@ using powerplant_coding_challenge.Interfaces;
 using powerplant_coding_challenge.Models;
 using powerplant_coding_challenge.Services;
 using Xunit;
+using System.Globalization;
 
 namespace powerplant_coding_challenge.Tests.Features;
 
@@ -14,24 +15,24 @@ public class ProductionPlanCommandHandlerIntegrationTests
     public async Task Handle_Should_Return_Expected_ProductionPlan_For_Payload1()
     {
         // Arrange
-        var costCalculator = new CostCalculatorService(); // Utilisation de l'implémentation réelle
-        var productionCalculator = new ProductionCalculatorService(); // Utilisation de l'implémentation réelle
+        var costCalculator = new CostCalculatorService();
+        var productionCalculator = new ProductionCalculatorService();
 
         var handler = new ProductionPlanCommandHandler(costCalculator, productionCalculator);
 
         var command = new ProductionPlanCommand
         {
-            Load = 480,
+            Load = 480m,
             Powerplants =
-    [
-        new() { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53, Pmin = 100, Pmax = 460 },
-        new Powerplant { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53, Pmin = 100, Pmax = 460 },
-        new Powerplant { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37, Pmin = 40, Pmax = 210 },
-        new Powerplant { Name = "tj1", Type = "turbojet", Efficiency = 0.3, Pmin = 0, Pmax = 16 },
-        new Powerplant { Name = "windpark1", Type = "windturbine", Efficiency = 1, Pmin = 0, Pmax = 150 },
-        new Powerplant { Name = "windpark2", Type = "windturbine", Efficiency = 1, Pmin = 0, Pmax = 36 }
-    ],
-            Fuels = new Fuels { Gas = 13.4, Kerosine = 50.8, Co2 = 20, Wind = 60 }
+            [
+                new Powerplant { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new Powerplant { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                new Powerplant { Name = "tj1", Type = "turbojet", Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                new Powerplant { Name = "windpark1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                new Powerplant { Name = "windpark2", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+            ],
+            Fuels = new Fuels { Gas = 13.4m, Kerosine = 50.8m, Co2 = 20m, Wind = 60m }
         };
 
         // Act
@@ -41,23 +42,20 @@ public class ProductionPlanCommandHandlerIntegrationTests
         result.Should().NotBeNull();
         result.Should().HaveCount(6);
 
-        result[0].Name.Should().Be("windpark1");
-        result[0].Power.Should().Be("90.0");   // windpark1
+        var expectedValues = new[]
+        {
+            90.0m,   // windpark1
+            21.6m,   // windpark2
+            368.4m,  // gasfiredbig1
+            0.0m,    // gasfiredbig2
+            0.0m,    // gasfiredsomewhatsmaller
+            0.0m     // tj1
+        };
 
-        result[1].Name.Should().Be("windpark2");
-        result[1].Power.Should().Be("21.6");  // windpark2
-
-        result[2].Name.Should().Be("gasfiredbig1");
-        result[2].Power.Should().Be("368.4"); // gasfiredbig1
-
-        result[3].Name.Should().Be("gasfiredbig2");
-        result[3].Power.Should().Be("100.0");  // gasfiredbig2
-
-        result[4].Name.Should().Be("gasfiredsomewhatsmaller");
-        result[4].Power.Should().Be("40.0");  // gasfiredsomewhatsmaller (mise à jour de l'attente)
-
-        result[5].Name.Should().Be("tj1");
-        result[5].Power.Should().Be("0.0");   // tj1
+        for (int i = 0; i < result.Count; i++)
+        {
+            result[i].Power.Should().Be(expectedValues[i].ToString("0.0", CultureInfo.InvariantCulture));
+        }
     }
 
     [Fact]
@@ -71,18 +69,18 @@ public class ProductionPlanCommandHandlerIntegrationTests
         {
             return p.Type.ToLower() switch
             {
-                "gasfired" => (f.Gas / p.Efficiency) + (0.3 * f.Co2),
+                "gasfired" => (f.Gas / p.Efficiency) + (0.3m * f.Co2),
                 "turbojet" => f.Kerosine / p.Efficiency,
-                "windturbine" => 0,
-                _ => double.MaxValue,
+                "windturbine" => 0m,
+                _ => decimal.MaxValue,
             };
         });
 
-        mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<double>(), It.IsAny<double>())).Returns((Powerplant p, double load, double wind) =>
+        mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>())).Returns((Powerplant p, decimal load, decimal wind) =>
         {
             return p.Type.ToLower() switch
             {
-                "windturbine" => p.Pmax * (wind / 100.0),
+                "windturbine" => p.Pmax * (wind / 100.0m),
                 _ => Math.Min(p.Pmax, Math.Max(p.Pmin, load)),
             };
         });
@@ -91,17 +89,17 @@ public class ProductionPlanCommandHandlerIntegrationTests
 
         var command = new ProductionPlanCommand
         {
-            Load = 480,
+            Load = 480m,
             Powerplants =
             [
-                new Powerplant { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53, Pmin = 100, Pmax = 460 },
-                new() { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53, Pmin = 100, Pmax = 460 },
-                new() { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37, Pmin = 40, Pmax = 210 },
-                new() { Name = "tj1", Type = "turbojet", Efficiency = 0.3, Pmin = 0, Pmax = 16 },
-                new() { Name = "windpark1", Type = "windturbine", Efficiency = 1, Pmin = 0, Pmax = 150 },
-                new() { Name = "windpark2", Type = "windturbine", Efficiency = 1, Pmin = 0, Pmax = 36 }
+                new Powerplant { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new() { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new() { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                new() { Name = "tj1", Type = "turbojet", Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                new() { Name = "windpark1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                new() { Name = "windpark2", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 36m }
             ],
-            Fuels = new Fuels { Gas = 13.4, Kerosine = 50.8, Co2 = 20, Wind = 0 }
+            Fuels = new Fuels { Gas = 13.4m, Kerosine = 50.8m, Co2 = 20m, Wind = 0m }
         };
 
         // Act
@@ -124,18 +122,18 @@ public class ProductionPlanCommandHandlerIntegrationTests
         {
             return p.Type.ToLower() switch
             {
-                "gasfired" => (f.Gas / p.Efficiency) + (0.3 * f.Co2),
+                "gasfired" => (f.Gas / p.Efficiency) + (0.3m * f.Co2),
                 "turbojet" => f.Kerosine / p.Efficiency,
-                "windturbine" => 0,
-                _ => double.MaxValue,
+                "windturbine" => 0m,
+                _ => decimal.MaxValue,
             };
         });
 
-        mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<double>(), It.IsAny<double>())).Returns((Powerplant p, double load, double wind) =>
+        mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>())).Returns((Powerplant p, decimal load, decimal wind) =>
         {
             return p.Type.ToLower() switch
             {
-                "windturbine" => p.Pmax * (wind / 100.0),
+                "windturbine" => p.Pmax * (wind / 100.0m),
                 _ => Math.Min(p.Pmax, Math.Max(p.Pmin, load)),
             };
         });
@@ -144,17 +142,17 @@ public class ProductionPlanCommandHandlerIntegrationTests
 
         var command = new ProductionPlanCommand
         {
-            Load = 480,
+            Load = 480m,
             Powerplants =
             [
-                new() { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53, Pmin = 100, Pmax = 460 },
-                new() { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53, Pmin = 100, Pmax = 460 },
-                new() { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37, Pmin = 40, Pmax = 210 },
-                new() { Name = "tj1", Type = "turbojet", Efficiency = 0.3, Pmin = 0, Pmax = 16 },
-                new() { Name = "windpark1", Type = "windturbine", Efficiency = 1, Pmin = 0, Pmax = 150 },
-                new() { Name = "windpark2", Type = "windturbine", Efficiency = 1, Pmin = 0, Pmax = 36 }
+                new Powerplant { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new() { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new() { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                new() { Name = "tj1", Type = "turbojet", Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                new() { Name = "windpark1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                new() { Name = "windpark2", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 36m }
             ],
-            Fuels = new Fuels { Gas = 13.4, Kerosine = 50.8, Co2 = 20, Wind = 60 }
+            Fuels = new Fuels { Gas = 13.4m, Kerosine = 50.8m, Co2 = 20m, Wind = 60m }
         };
 
         // Act

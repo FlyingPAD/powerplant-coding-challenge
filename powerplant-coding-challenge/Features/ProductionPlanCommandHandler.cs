@@ -15,76 +15,105 @@ public class ProductionPlanCommandHandler(ICostCalculator costCalculator, IProdu
         var request = command;
         var response = new List<ProductionPlanCommandResponse>();
 
-        double remainingLoad = request.Load;
-        double totalCost = 0;
-        double totalProductionCalculated = 0;
+        decimal remainingLoad = request.Load;
+        decimal totalCost = 0m;
+        decimal totalProductionCalculated = 0m;
 
-        // Log initial request and load
-        Log.Information("Requested Load: {Load} MW", request.Load);
-        Log.Information("Production Breakdown:");
+        Log.Information("Requested Load : {Load} MWh (Energy required for the next hour) \n", request.Load);
 
-        // 1. Calculate the production of wind turbines
+        // 1. Calcul de la production des éoliennes
         foreach (var windPlant in request.Powerplants.Where(powerplant => powerplant.Type == "windturbine"))
         {
-            double production = _productionCalculator.CalculateProduction(windPlant, remainingLoad, request.Fuels.Wind);
+            decimal production = _productionCalculator.CalculateProduction(windPlant, remainingLoad, request.Fuels.Wind);
             if (production > remainingLoad) production = remainingLoad;
 
-            double cost = _costCalculator.CalculateCostPerMWh(windPlant, request.Fuels) * production;
-            totalCost += cost;
-            remainingLoad -= production;
-
-            // Accumulate the total production
             totalProductionCalculated += production;
+            remainingLoad -= production;
 
             response.Add(new ProductionPlanCommandResponse(windPlant.Name, production.ToString("F1", CultureInfo.InvariantCulture)));
 
-            Log.Information("- {PlantName}: {Production} MW @ {Wind}% wind (Cost: {Cost:F2} EUR)",
-                windPlant.Name, production, request.Fuels.Wind, cost);
+            Log.Information(
+                " => Evaluating {PlantName} :\n" +
+                "  - Type : {Type} \n" +
+                "  - Pmin : {Pmin} MW \n" +
+                "  - Pmax : {Pmax} MW \n" +
+                "  - Efficiency : {Efficiency:F2} \n" +
+                "  - Producing : {Production} MWh @ {Wind}% wind (0 EUR) \n",
+                windPlant.Name, windPlant.Type, windPlant.Pmin, windPlant.Pmax, windPlant.Efficiency,
+                production, request.Fuels.Wind
+            );
         }
 
-        // 2. Calculate the production cost for each remaining power plant
+        // 2. Calcul de la production et du coût pour chaque centrale restante
         var powerplants = request.Powerplants
             .Where(powerplant => powerplant.Type != "windturbine")
             .OrderBy(powerplant => _costCalculator.CalculateCostPerMWh(powerplant, request.Fuels))
             .ToList();
 
-        // 3. Allocate the remaining load
         foreach (var powerplant in powerplants)
         {
+            string logMessage = string.Format(
+                " => Evaluating {0} :\n" +
+                "  - Type : {1} \n" +
+                "  - Pmin : {2} MW \n" +
+                "  - Pmax : {3} MW \n" +
+                "  - Efficiency : {4:F2}",
+                powerplant.Name, powerplant.Type, powerplant.Pmin, powerplant.Pmax, powerplant.Efficiency
+            );
+
             if (remainingLoad <= 0)
             {
+                logMessage += "\n  -> Skipped : Remaining load is 0.0 MWh.";
+                Log.Information(logMessage + "\n");
                 response.Add(new ProductionPlanCommandResponse(powerplant.Name, "0.0"));
-                Log.Information("- {PlantName}: 0 MW (Cost: 0 EUR)", powerplant.Name);
                 continue;
             }
 
-            double production = _productionCalculator.CalculateProduction(powerplant, remainingLoad, request.Fuels.Wind);
+            decimal production = _productionCalculator.CalculateProduction(powerplant, remainingLoad, request.Fuels.Wind);
             if (production > remainingLoad) production = remainingLoad;
 
-            double cost = _costCalculator.CalculateCostPerMWh(powerplant, request.Fuels) * production;
-            totalCost += cost;
-            remainingLoad -= production;
+            decimal fuelCostPerMWh = request.Fuels.Gas / powerplant.Efficiency;
+            decimal co2CostPerMWh = 0.3m * request.Fuels.Co2;
+            decimal totalCostPerMWh = fuelCostPerMWh + co2CostPerMWh;
+            decimal costBeforeRounding = totalCostPerMWh * production;
 
-            // Accumulate the total production
+            decimal cost = Math.Round(costBeforeRounding, 2);
+            totalCost += cost;
+
+            remainingLoad -= production;
             totalProductionCalculated += production;
 
-            response.Add(new ProductionPlanCommandResponse(powerplant.Name, production.ToString("F1", CultureInfo.InvariantCulture)));
+            logMessage += string.Format(
+                "\n  - Producing : {0} MWh ({1:F2} EUR)\n" +
+                "  - Cost Breakdown :\n" +
+                "      Fuel Cost : {2:F2} EUR/MWh \n" +
+                "      CO2 Cost : {3:F2} EUR/MWh \n" +
+                "      Total Cost per MWh : {4:F2} EUR",
+                production, cost, fuelCostPerMWh, co2CostPerMWh, totalCostPerMWh
+            );
 
-            Log.Information("- {PlantName}: {Production} MW (Cost: {Cost:F2} EUR)", powerplant.Name, production, cost);
+            Log.Information(logMessage + "\n");
+
+            response.Add(new ProductionPlanCommandResponse(powerplant.Name, production.ToString("F1", CultureInfo.InvariantCulture)));
         }
 
-        // Log the total load processed and the total cost
-        Log.Information("Load Processed: {TotalLoad:F1} MW\nTotal Cost: {TotalCost:F2} EUR",
-            request.Load - remainingLoad, totalCost);
+        // Arrondir le coût total après avoir additionné tous les coûts
+        totalCost = Math.Round(totalCost, 2);
 
-        // Log the total production calculated
-        Log.Information("Total Production Calculated: {TotalProductionCalculated:F1} MW", totalProductionCalculated);
+        Log.Information(" -> Load Processed : {TotalLoad:F1} MWh | Total Cost : {TotalCost:F2} EUR/h", totalProductionCalculated, totalCost);
 
-        // Check for discrepancies
-        if (Math.Abs(totalProductionCalculated - request.Load) > 0.1)
+        decimal discrepancy = totalProductionCalculated - request.Load;
+        if (discrepancy > 0.1m)
         {
-            double discrepancy = totalProductionCalculated - request.Load;
-            Log.Warning("Discrepancy: {Discrepancy:F1} MW. Check the production allocation algorithm.", discrepancy);
+            Log.Warning("Discrepancy : {Discrepancy:F1} MWh. Production exceeds the requested load.", discrepancy);
+        }
+        else if (discrepancy < -0.1m)
+        {
+            Log.Warning("Discrepancy : {Discrepancy:F1} MWh. Production is insufficient to meet the requested load.", discrepancy);
+        }
+        else
+        {
+            Log.Information("Discrepancy : {Discrepancy:F1} MWh. The production meets the requested load perfectly.", discrepancy);
         }
 
         return await Task.FromResult(response);

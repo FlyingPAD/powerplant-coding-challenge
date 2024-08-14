@@ -12,7 +12,7 @@ public class ProductionPlanCommandValidatorTests
     [Fact]
     public void Validator_Should_Have_Error_When_Load_Is_Negative()
     {
-        var command = new ProductionPlanCommand { Load = -10 };
+        var command = new ProductionPlanCommand { Load = -10m };
         var result = _validator.TestValidate(command);
         result.ShouldHaveValidationErrorFor(c => c.Load).WithErrorMessage("Load must be greater than 0.");
     }
@@ -22,11 +22,11 @@ public class ProductionPlanCommandValidatorTests
     {
         var command = new ProductionPlanCommand
         {
-            Load = 100,
+            Load = 100m,
             Powerplants = [
-                new Powerplant { Name = "Plant1", Type = "gasfired", Efficiency = 0.5, Pmin = 50, Pmax = 200 }
+                new Powerplant { Name = "Plant1", Type = "gasfired", Efficiency = 0.5m, Pmin = 50m, Pmax = 200m }
             ],
-            Fuels = new Fuels { Gas = 13.4, Kerosine = 50.8, Co2 = 20, Wind = 60 }
+            Fuels = new Fuels { Gas = 13.4m, Kerosine = 50.8m, Co2 = 20m, Wind = 60m }
         };
 
         var result = _validator.TestValidate(command);

@@ -13,24 +13,24 @@ public class CostCalculatorServiceTests
     public void CalculateCostPerMWh_Should_Return_Correct_Cost_For_Gasfired()
     {
         // Arrange
-        var powerplant = new Powerplant { Type = "gasfired", Efficiency = 0.5 };
-        var fuels = new Fuels { Gas = 13.4, Co2 = 20 };
+        var powerplant = new Powerplant { Type = "gasfired", Efficiency = 0.5m };
+        var fuels = new Fuels { Gas = 13.4m, Co2 = 20m };
 
         // Act
         var cost = _costCalculator.CalculateCostPerMWh(powerplant, fuels);
 
         // Assert
-        cost.Should().Be(32.8);
+        cost.Should().Be(32.8m);
     }
 
     [Fact]
     public void CalculateCostPerMWh_Should_Return_Zero_For_WindTurbine()
     {
-        var powerplant = new Powerplant { Type = "windturbine", Efficiency = 1.0 };
+        var powerplant = new Powerplant { Type = "windturbine", Efficiency = 1.0m };
         var fuels = new Fuels();
 
         var cost = _costCalculator.CalculateCostPerMWh(powerplant, fuels);
 
-        cost.Should().Be(0);
+        cost.Should().Be(0m);
     }
 }

@@ -5,15 +5,21 @@ namespace powerplant_coding_challenge.Services;
 
 public class ProductionCalculatorService : IProductionCalculator
 {
-    public double CalculateProduction(Powerplant powerplant, double load, double windPercentage)
+    public decimal CalculateProduction(Powerplant powerplant, decimal load, decimal windPercentage)
     {
+        decimal production;
+
         if (powerplant.Type == "windturbine")
         {
-            return powerplant.Pmax * (windPercentage / 100.0);
+            production = powerplant.Pmax * (windPercentage / 100.0m);
         }
         else
         {
-            return Math.Min(powerplant.Pmax, Math.Max(powerplant.Pmin, load));
+            decimal maxLoad = Math.Max(powerplant.Pmin, load);
+
+            production = Math.Min(powerplant.Pmax, maxLoad);
         }
+
+        return production;
     }
 }

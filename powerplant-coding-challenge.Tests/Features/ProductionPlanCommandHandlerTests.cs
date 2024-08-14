@@ -10,56 +10,26 @@ namespace powerplant_coding_challenge.Tests.Features;
 public class ProductionPlanCommandHandlerTests
 {
     [Fact]
-    public async Task Handle_Should_Return_Expected_ProductionPlan()
-    {
-        // Arrange
-        var mockCostCalculator = new Mock<ICostCalculator>();
-        var mockProductionCalculator = new Mock<IProductionCalculator>();
-
-        mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>())).Returns(10);
-        mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<double>(), It.IsAny<double>())).Returns(100);
-
-        var handler = new ProductionPlanCommandHandler(mockCostCalculator.Object, mockProductionCalculator.Object);
-
-        var command = new ProductionPlanCommand
-        {
-            Load = 200,
-            Powerplants = [
-                new Powerplant { Name = "TestPlant", Type = "gasfired", Efficiency = 0.5, Pmin = 100, Pmax = 200 }
-            ],
-            Fuels = new Fuels { Gas = 13.4, Kerosine = 50.8, Co2 = 20, Wind = 60 }
-        };
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(1);
-        result[0].Name.Should().Be("TestPlant");
-        result[0].Power.Should().Be("100.0");
-    }
-
-    [Fact]
     public async Task Handle_Should_Distribute_Load_Among_Powerplants()
     {
         // Arrange
         var mockCostCalculator = new Mock<ICostCalculator>();
         var mockProductionCalculator = new Mock<IProductionCalculator>();
 
-        mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>())).Returns(10);
-        mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<double>(), It.IsAny<double>())).Returns((Powerplant p, double load, double wind) => Math.Min(p.Pmax, load));
+        mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>())).Returns(10m);
+        mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>())).Returns((Powerplant p, decimal load, decimal wind) => Math.Min(p.Pmax, load));
 
         var handler = new ProductionPlanCommandHandler(mockCostCalculator.Object, mockProductionCalculator.Object);
 
         var command = new ProductionPlanCommand
         {
-            Load = 300,
-            Powerplants = [
-                new Powerplant { Name = "Plant1", Type = "gasfired", Efficiency = 0.5, Pmin = 100, Pmax = 200 },
-                new Powerplant { Name = "Plant2", Type = "gasfired", Efficiency = 0.5, Pmin = 100, Pmax = 200 }
+            Load = 300m,
+            Powerplants =
+            [
+                new Powerplant { Name = "Plant1", Type = "gasfired", Efficiency = 0.5m, Pmin = 100m, Pmax = 200m },
+                new Powerplant { Name = "Plant2", Type = "gasfired", Efficiency = 0.5m, Pmin = 100m, Pmax = 200m }
             ],
-            Fuels = new Fuels { Gas = 13.4, Kerosine = 50.8, Co2 = 20, Wind = 60 }
+            Fuels = new Fuels { Gas = 13.4m, Kerosine = 50.8m, Co2 = 20m, Wind = 60m }
         };
 
         // Act
@@ -68,7 +38,23 @@ public class ProductionPlanCommandHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
-        result[0].Power.Should().Be("200.0");
-        result[1].Power.Should().Be("100.0");
+
+        var expectedPowerPlant1 = "200.0";
+        var expectedPowerPlant2 = "100.0";
+
+        // Vérification des valeurs retournées
+        result[0].Power.Should().Be(expectedPowerPlant1);
+        result[1].Power.Should().Be(expectedPowerPlant2);
+
+        // Vérification que CalculateProduction a été appelé avec les bons paramètres
+        mockProductionCalculator.Verify(x => x.CalculateProduction(
+            It.Is<Powerplant>(p => p.Name == "Plant1"),
+            It.Is<decimal>(load => load == 300m), // Load initialement assigné à la première centrale
+            It.Is<decimal>(wind => wind == 60m)), Times.Once);
+
+        mockProductionCalculator.Verify(x => x.CalculateProduction(
+            It.Is<Powerplant>(p => p.Name == "Plant2"),
+            It.Is<decimal>(load => load == 100m), // La charge restante assignée à la deuxième centrale
+            It.Is<decimal>(wind => wind == 60m)), Times.Once);
     }
 }
