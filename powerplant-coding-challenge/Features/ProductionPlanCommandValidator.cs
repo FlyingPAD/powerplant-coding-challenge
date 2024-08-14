@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace powerplant_coding_challenge.ProductionPlan;
+namespace powerplant_coding_challenge.Features;
 
 public class ProductionPlanCommandValidator : AbstractValidator<ProductionPlanCommand>
 {

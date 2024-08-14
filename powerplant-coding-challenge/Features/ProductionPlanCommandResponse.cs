@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace powerplant_coding_challenge.ProductionPlan;
+namespace powerplant_coding_challenge.Features;
 
 public class ProductionPlanCommandResponse(string name, string power)
 {

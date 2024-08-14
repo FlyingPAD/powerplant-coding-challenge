@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using powerplant_coding_challenge.ProductionPlan;
+using powerplant_coding_challenge.Features;
 
 namespace PowerplantCodingChallenge.Controllers;
 

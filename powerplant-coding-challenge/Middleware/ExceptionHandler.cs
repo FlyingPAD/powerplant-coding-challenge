@@ -2,17 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Context;
-using System.Text.Json;
+using powerplant_coding_challenge.Helpers;
 
 namespace powerplant_coding_challenge.Middleware;
 
 public class ExceptionHandler(RequestDelegate next)
 {
     private readonly RequestDelegate _next = next;
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
 
     public async Task Invoke(HttpContext httpContext)
     {
@@ -43,7 +39,6 @@ public class ExceptionHandler(RequestDelegate next)
 
     private static async Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)
     {
-        context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
         var validationErrors = exception.Errors.Select(e => new
@@ -61,13 +56,11 @@ public class ExceptionHandler(RequestDelegate next)
             Errors = validationErrors.ToDictionary(e => e.Field, e => new[] { e.Error })
         };
 
-        var responseString = JsonSerializer.Serialize(problemDetails, _jsonSerializerOptions);
-        await context.Response.WriteAsync(responseString);
+        await ResponseHelper.WriteProblemDetailsResponse(context, problemDetails);
     }
 
     private static async Task HandleExceptionAsync(HttpContext context)
     {
-        context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
         var problemDetails = new ProblemDetails
@@ -80,8 +73,7 @@ public class ExceptionHandler(RequestDelegate next)
 
         try
         {
-            var responseString = JsonSerializer.Serialize(problemDetails, _jsonSerializerOptions);
-            await context.Response.WriteAsync(responseString);
+            await ResponseHelper.WriteProblemDetailsResponse(context, problemDetails);
         }
         catch (Exception ex)
         {

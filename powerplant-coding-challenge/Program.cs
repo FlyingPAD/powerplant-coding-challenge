@@ -1,4 +1,6 @@
+using powerplant_coding_challenge.Interfaces;
 using powerplant_coding_challenge.Middleware;
+using powerplant_coding_challenge.Services;
 using Serilog;
 using System.Reflection;
 
@@ -10,7 +12,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Configure Serilog as the logging provider.
+        // Configure Serilog.
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .CreateLogger();
@@ -19,32 +21,29 @@ public class Program
         {
             Log.Information(" => Starting up the service");
 
-            // Use Serilog for logging in the application.
             builder.Host.UseSerilog();
 
-            // Register MediatR services with the current assembly.
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
 
-            // Add services.
+            builder.Services.AddScoped<ICostCalculator, CostCalculatorService>();
+            builder.Services.AddScoped<IProductionCalculator, ProductionCalculatorService>();
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Build the application.
             var app = builder.Build();
 
-            // Configure Swagger.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-            app.UseAuthorization();
-
-            // Use custom exception handling middleware
+            app.UseMiddleware<RequestLoggingMiddleware>();
             app.UseMiddleware<ExceptionHandler>();
+
+            app.UseAuthorization();
 
             app.MapControllers();
 
