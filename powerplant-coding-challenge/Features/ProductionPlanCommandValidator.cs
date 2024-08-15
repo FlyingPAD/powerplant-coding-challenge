@@ -15,6 +15,14 @@ public class ProductionPlanCommandValidator : AbstractValidator<ProductionPlanCo
         RuleForEach(command => command.Powerplants)
             .ChildRules(plant =>
             {
+                plant.RuleFor(powerplant => powerplant.Name)
+                    .NotEmpty()
+                    .WithMessage("Powerplant name must not be empty.");
+
+                plant.RuleFor(powerplant => powerplant.Type)
+                    .Must(type => type == "gasfired" || type == "turbojet" || type == "windturbine")
+                    .WithMessage("Powerplant type must be 'gasfired', 'turbojet', or 'windturbine'.");
+
                 plant.RuleFor(powerplant => powerplant.Efficiency)
                     .InclusiveBetween(0, 1)
                     .WithMessage("Efficiency should be between 0 and 1");

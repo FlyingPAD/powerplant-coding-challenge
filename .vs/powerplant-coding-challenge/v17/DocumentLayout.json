@@ -1,7 +1,12 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|c:\\- dev - github\\powerplant-coding-challenge\\powerplant-coding-challenge\\logs\\log-20240814.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{F86ED3A1-AE38-4FEF-B562-579301266A5A}|powerplant-coding-challenge\\powerplant-coding-challenge.csproj|solutionrelative:powerplant-coding-challenge\\logs\\log-20240814.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +14,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "log-20240814.txt",
+              "DocumentMoniker": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Logs\\log-20240814.txt",
+              "RelativeDocumentMoniker": "powerplant-coding-challenge\\Logs\\log-20240814.txt",
+              "ToolTip": "C:\\- DEV - GitHub\\powerplant-coding-challenge\\powerplant-coding-challenge\\Logs\\log-20240814.txt",
+              "RelativeToolTip": "powerplant-coding-challenge\\Logs\\log-20240814.txt",
+              "ViewState": "AQIAABgAAAAAAAAAAAAgwCoAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2024-08-14T15:31:17.133Z",
+              "EditorCaption": ""
             }
           ]
         }

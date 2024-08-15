@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using Serilog.Context;
 using powerplant_coding_challenge.Helpers;
+using Serilog.Context;
+using System.Text.Json;
 
 namespace powerplant_coding_challenge.Middleware;
 
@@ -41,11 +42,10 @@ public class ExceptionHandler(RequestDelegate next)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-        var validationErrors = exception.Errors.Select(e => new
-        {
-            Field = e.PropertyName,
-            Error = e.ErrorMessage
-        });
+        // Collect all validation errors
+        var validationErrors = exception.Errors
+            .GroupBy(e => e.PropertyName)
+            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
 
         var problemDetails = new ValidationProblemDetails
         {
@@ -53,10 +53,11 @@ public class ExceptionHandler(RequestDelegate next)
             Title = "Validation Failed",
             Detail = "One or more validation errors occurred.",
             Instance = context.Request.Path,
-            Errors = validationErrors.ToDictionary(e => e.Field, e => new[] { e.Error })
+            Errors = validationErrors
         };
 
-        await ResponseHelper.WriteProblemDetailsResponse(context, problemDetails);
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
     }
 
     private static async Task HandleExceptionAsync(HttpContext context)
@@ -73,7 +74,8 @@ public class ExceptionHandler(RequestDelegate next)
 
         try
         {
-            await ResponseHelper.WriteProblemDetailsResponse(context, problemDetails);
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
         }
         catch (Exception ex)
         {
