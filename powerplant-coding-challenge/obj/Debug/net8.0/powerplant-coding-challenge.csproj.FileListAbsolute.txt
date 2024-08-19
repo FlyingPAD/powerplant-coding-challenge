@@ -72,9 +72,9 @@ C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\De
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.powerplant-coding-challenge.props
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\staticwebassets.pack.json
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\scopedcss\bundle\powerplant-coding-challenge.styles.css
-C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerpla.D46D25C0.Up2Date
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerplant-coding-challenge.dll
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\refint\powerplant-coding-challenge.dll
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerplant-coding-challenge.pdb
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerplant-coding-challenge.genruntimeconfig.cache
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\ref\powerplant-coding-challenge.dll
+C:\- DEV - Github\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerplant-coding-challenge.csproj.CopyComplete
