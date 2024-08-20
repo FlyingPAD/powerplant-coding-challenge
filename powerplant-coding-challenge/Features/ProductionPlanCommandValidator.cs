@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using powerplant_coding_challenge.Models;
 
 namespace powerplant_coding_challenge.Features;
 
@@ -20,12 +21,12 @@ public class ProductionPlanCommandValidator : AbstractValidator<ProductionPlanCo
                     .WithMessage("Powerplant name must not be empty.");
 
                 plant.RuleFor(powerplant => powerplant.Type)
-                    .Must(type => type == "gasfired" || type == "turbojet" || type == "windturbine")
-                    .WithMessage("Powerplant type must be 'gasfired', 'turbojet', or 'windturbine'.");
+                    .IsInEnum()
+                    .WithMessage("Powerplant type must be a valid value from PowerplantType enum.");
 
                 plant.RuleFor(powerplant => powerplant.Efficiency)
-                    .InclusiveBetween(0, 1)
-                    .WithMessage("Efficiency should be between 0 and 1");
+                    .InclusiveBetween(0.01m, 1m)
+                    .WithMessage("Efficiency should be between 0.01 and 1");
 
                 plant.RuleFor(powerplant => powerplant.Pmin)
                     .GreaterThanOrEqualTo(0)
@@ -33,11 +34,25 @@ public class ProductionPlanCommandValidator : AbstractValidator<ProductionPlanCo
 
                 plant.RuleFor(powerplant => powerplant.Pmax)
                     .GreaterThan(0)
-                    .WithMessage("PMax must be > 0.");
+                    .WithMessage("Pmax must be > 0.");
 
                 plant.RuleFor(powerplant => powerplant.Pmax)
                     .GreaterThan(powerplant => powerplant.Pmin)
                     .WithMessage("Pmax must be > Pmin.");
+
+                plant.When(powerplant => powerplant.Type == PowerplantType.windturbine, () =>
+                {
+                    plant.RuleFor(powerplant => powerplant.Efficiency)
+                        .Equal(1)
+                        .WithMessage("Efficiency for windturbine must be 1.");
+                });
+
+                plant.When(powerplant => powerplant.Type == PowerplantType.gasfired || powerplant.Type == PowerplantType.turbojet, () =>
+                {
+                    plant.RuleFor(powerplant => powerplant.Efficiency)
+                        .GreaterThan(0.01m)
+                        .WithMessage("Efficiency for gasfired or turbojet must be greater than 0.01.");
+                });
             });
 
         // Validation for Fuels

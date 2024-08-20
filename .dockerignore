@@ -3,6 +3,8 @@
 
 # Ignore the .vs directory (Visual Studio)
 .vs
+.vscode/
+.idea/
 
 # Ignore the bin and obj directories (build artifacts)
 **/bin
@@ -20,3 +22,7 @@ Dockerfile
 
 # Ignore logs
 logs/
+
+# Ignore temporary and system files
+*.swp
+*.DS_Store

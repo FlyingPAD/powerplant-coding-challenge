@@ -1,7 +1,6 @@
 using FluentValidation;
 using MediatR;
 using powerplant_coding_challenge.Features;
-using powerplant_coding_challenge.Interfaces;
 using powerplant_coding_challenge.Middleware;
 using powerplant_coding_challenge.Services;
 using Serilog;
@@ -32,10 +31,6 @@ public class Program
 
             // Ajouter le ValidationBehavior au pipeline MediatR
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-            // Enregistrer les services personnalisés
-            builder.Services.AddScoped<ICostCalculator, CostCalculatorService>();
-            builder.Services.AddScoped<IProductionCalculator, ProductionCalculatorService>();
 
             // Ajouter les contrôleurs
             builder.Services.AddControllers();

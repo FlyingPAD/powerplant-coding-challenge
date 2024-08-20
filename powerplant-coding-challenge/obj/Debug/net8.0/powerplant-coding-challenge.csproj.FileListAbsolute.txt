@@ -77,4 +77,4 @@ C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\De
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerplant-coding-challenge.pdb
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerplant-coding-challenge.genruntimeconfig.cache
 C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\ref\powerplant-coding-challenge.dll
-C:\- DEV - Github\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerplant-coding-challenge.csproj.CopyComplete
+C:\- DEV - GitHub\powerplant-coding-challenge\powerplant-coding-challenge\obj\Debug\net8.0\powerpla.D46D25C0.Up2Date
