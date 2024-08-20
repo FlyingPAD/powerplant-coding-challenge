@@ -1,0 +1,93 @@
+INITIALISER la liste `response` vide
+INITIALISER `remainingLoad` avec `command.Load`
+INITIALISER `totalCost` à 0
+
+// Étape 1 : Calculer la capacité totale disponible
+INITIALISER `totalCapacity` à la somme de tous les `Pmax` des centrales
+
+// Étape 2 : Vérifier si la charge demandée dépasse la capacité totale
+SI `remainingLoad > totalCapacity` :
+    RENVOYER une réponse indiquant que la charge demandée ne peut pas être satisfaite
+
+// Étape 3 : Traiter les éoliennes en premier
+POUR CHAQUE centrale DANS `command.Powerplants` OÙ `plant.Type == "windturbine"` :
+    CALCULER `production = plant.Pmax * (command.Fuels.Wind / 100)`
+    SOUSTRAIRE `production` de `remainingLoad`
+    AJOUTER (`plant.Name`, `production`) à `response`
+    JOURNALISER l'évaluation et le coût (le coût est 0 pour le vent)
+
+// Étape 4 : Trier les autres centrales par coût marginal
+INITIALISER `sortedPowerplants` avec `command.Powerplants` OÙ `plant.Type != "windturbine"`
+TRIER `sortedPowerplants` par `plant.CalculateCostPerMWh(command.Fuels)` en ordre croissant
+
+// Étape 5 : Allouer la production des centrales triées
+POUR CHAQUE centrale DANS `sortedPowerplants` :
+    SI `remainingLoad <= 0` :
+        AJOUTER (`plant.Name`, 0) à `response`
+        CONTINUER avec la prochaine centrale
+    
+    CALCULER `production = MIN(plant.Pmax, remainingLoad)`
+    
+    SI `production >= plant.Pmin` :
+        AJOUTER (`plant.Name`, `production`) à `response`
+        SOUSTRAIRE `production` de `remainingLoad`
+        CALCULER `cost = production * plant.CalculateCostPerMWh(command.Fuels)`
+        AJOUTER `cost` à `totalCost`
+        JOURNALISER l'évaluation et le coût de production
+    SINON :
+        AJOUTER (`plant.Name`, 0) à `response`
+        JOURNALISER que la centrale est ignorée
+
+// Étape 6 : Ajuster la production pour correspondre exactement à la charge
+SI `remainingLoad > 0` :
+    POUR CHAQUE centrale DANS `sortedPowerplants` :
+        RÉCUPÉRER `productionResponse` de `response` où le nom de la centrale correspond
+        CALCULER `currentProduction = productionResponse.Power`
+        CALCULER `increase = MIN(remainingLoad, plant.Pmax - currentProduction)`
+        
+        SI `increase > 0` :
+            AUGMENTER `currentProduction` de `increase`
+            METTRE À JOUR `productionResponse.Power` avec `currentProduction`
+            SOUSTRAIRE `increase` de `remainingLoad`
+            JOURNALISER l'ajustement et le coût de production
+            
+        SI `remainingLoad <= 0` :
+            ARRÊTER la boucle
+
+SI `remainingLoad < 0` :
+    POUR CHAQUE centrale DANS `sortedPowerplants` en ordre inverse :
+        RÉCUPÉRER `productionResponse` de `response` où le nom de la centrale correspond
+        CALCULER `currentProduction = productionResponse.Power`
+        CALCULER `decrease = MIN(-remainingLoad, currentProduction - plant.Pmin)`
+        
+        SI `decrease > 0` :
+            DIMINUER `currentProduction` de `decrease`
+            METTRE À JOUR `productionResponse.Power` avec `currentProduction`
+            AJOUTER `decrease` à `remainingLoad`
+            JOURNALISER l'ajustement et le coût de production
+            
+        SI `remainingLoad >= 0` :
+            ARRÊTER la boucle
+
+// Étape 7 : Forcer l'ajustement final si nécessaire
+SI `remainingLoad != 0` :
+    POUR CHAQUE centrale DANS `sortedPowerplants` :
+        RÉCUPÉRER `productionResponse` de `response` où le nom de la centrale correspond
+        CALCULER `currentProduction = productionResponse.Power`
+        
+        SI `remainingLoad > 0` ET `currentProduction < plant.Pmax` :
+            CALCULER `adjustment = MIN(remainingLoad, plant.Pmax - currentProduction)`
+            AUGMENTER `currentProduction` de `adjustment`
+            METTRE À JOUR `productionResponse.Power` avec `currentProduction`
+            SOUSTRAIRE `adjustment` de `remainingLoad`
+            JOURNALISER l'ajustement final
+            
+        SI `remainingLoad < 0` ET `currentProduction > plant.Pmin` :
+            CALCULER `adjustment = MIN(-remainingLoad, currentProduction - plant.Pmin)`
+            DIMINUER `currentProduction` de `adjustment`
+            METTRE À JOUR `productionResponse.Power` avec `currentProduction`
+            AJOUTER `adjustment` à `remainingLoad`
+            JOURNALISER l'ajustement final
+
+        SI `remainingLoad == 0` :
+            ARRÊTER la boucle

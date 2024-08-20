@@ -35,9 +35,9 @@ public class ProductionPlanCommandHandlerTests
         result[1].Power.Should().Be("100.0");
     }
 
-    // Test to verify that the handler correctly handles load that exceeds the total Pmax of all powerplants
-    [Fact(Skip = "Test is skipped for now")]
-    public async Task Handle_Should_Cap_Production_At_Pmax_When_Load_Exceeds_Total_Pmax()
+    // Test to verify that the handler throws an exception when the load exceeds the total Pmax of all powerplants
+    [Fact]
+    public async Task Handle_Should_Throw_Exception_When_Load_Exceeds_Total_Pmax()
     {
         // Arrange
         var handler = new ProductionPlanCommandHandler();
@@ -54,27 +54,16 @@ public class ProductionPlanCommandHandlerTests
             Fuels = new Fuels { Gas = 13.4m, Kerosine = 50.8m, Co2 = 20m, Wind = 60m }
         };
 
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Debugging output to understand what's happening
-        foreach (var r in result)
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
-            Console.WriteLine($"Powerplant: {r.Name}, Power: {r.Power}");
-        }
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(3);
-        result[0].Power.Should().Be("400.0"); // Expected Pmax for Plant1
-        result[1].Power.Should().Be("400.0"); // Expected Pmax for Plant2
-        result[2].Power.Should().Be("90.0");  // Expected production for Windturbine (150 * 0.6)
+            await handler.Handle(command, CancellationToken.None);
+        });
     }
 
-
     // Test to verify that the handler correctly assigns minimum production for plants when load is low
-    [Fact(Skip = "Test is skipped for now")]
-    public async Task Handle_Should_Assign_Pmin_When_Load_Is_Low()
+    [Fact]
+    public async Task Handle_Should_Throw_Exception_When_Load_Is_Below_Pmin()
     {
         // Arrange
         var handler = new ProductionPlanCommandHandler();
@@ -90,14 +79,8 @@ public class ProductionPlanCommandHandlerTests
             Fuels = new Fuels { Gas = 13.4m, Kerosine = 50.8m, Co2 = 20m, Wind = 60m }
         };
 
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        result[0].Power.Should().Be("0.0");   // Gasfired plant can't operate below Pmin
-        result[1].Power.Should().Be("30.0");  // Windturbine produces 150 * 0.6, but the load is limited
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => handler.Handle(command, CancellationToken.None));
     }
 
     // Test to verify that the handler correctly handles windturbine production based on wind percentage

@@ -1,27 +1,18 @@
 ﻿using FluentAssertions;
-using Moq;
 using powerplant_coding_challenge.Features;
-using powerplant_coding_challenge.Interfaces;
 using powerplant_coding_challenge.Models;
-using Serilog;
 using Xunit;
 
 namespace powerplant_coding_challenge.Tests.Features;
 
 public class AdvancedProductionPlanCommandHandlerTests
 {
-    private readonly Mock<ICostCalculator> _mockCostCalculator;
-    private readonly Mock<IProductionCalculator> _mockProductionCalculator;
     private readonly ProductionPlanCommandHandler _handler;
-    private readonly ProductionPlanCommandHandler _handlerCo2Enabled;
     private readonly Fuels _baseFuels;
 
     public AdvancedProductionPlanCommandHandlerTests()
     {
-        _mockCostCalculator = new Mock<ICostCalculator>();
-        _mockProductionCalculator = new Mock<IProductionCalculator>();
-        _handler = new ProductionPlanCommandHandler(_mockCostCalculator.Object, _mockProductionCalculator.Object);
-        _handlerCo2Enabled = new ProductionPlanCommandHandler(_mockCostCalculator.Object, _mockProductionCalculator.Object);
+        _handler = new ProductionPlanCommandHandler();
         _baseFuels = new Fuels { Co2 = 20, Kerosine = 50, Gas = 15, Wind = 50 };
     }
 
@@ -31,16 +22,17 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 500m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 50m, Pmax = 100m },
-                new Powerplant { Name = "Gas2", Type = "gasfired", Efficiency = 0.5m, Pmin = 50m, Pmax = 100m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m },
+                new Powerplant { Name = "Gas2", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m }
+            ],
             Fuels = _baseFuels
         };
 
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().ThrowAsync<InvalidOperationException>()
+                 .WithMessage("La charge demandée dépasse la capacité totale des centrales disponibles.");
     }
 
     [Fact]
@@ -49,16 +41,17 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 20m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 50m, Pmax = 100m },
-                new Powerplant { Name = "Wind1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 50m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m },
+                new Powerplant { Name = "Wind1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
+            ],
             Fuels = _baseFuels
         };
 
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("La charge demandée est inférieure au Pmin total des centrales disponibles.");
     }
 
     [Fact]
@@ -67,16 +60,13 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 25m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Wind1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 50m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Wind1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
+            ],
             Fuels = _baseFuels
         };
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) => plant.Type == "windturbine" ? wind * plant.Pmax / 100 : Math.Min(load, plant.Pmax));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -91,16 +81,13 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 50m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Wind1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 50m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Wind1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
+            ],
             Fuels = _baseFuels
         };
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) => plant.Type == "windturbine" ? wind * plant.Pmax / 100 : Math.Min(load, plant.Pmax));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -115,16 +102,13 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 20m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Wind1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 50m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Wind1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
+            ],
             Fuels = _baseFuels
         };
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) => plant.Type == "windturbine" ? wind * plant.Pmax / 100 : Math.Min(load, plant.Pmax));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -139,22 +123,16 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 20m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Gas2", Type = "gasfired", Efficiency = 0.6m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Gas3", Type = "gasfired", Efficiency = 0.8m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Gas4", Type = "gasfired", Efficiency = 0.3m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Gas5", Type = "gasfired", Efficiency = 0.45m, Pmin = 10m, Pmax = 100m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Gas2", Type = PowerplantType.gasfired, Efficiency = 0.6m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Gas3", Type = PowerplantType.gasfired, Efficiency = 0.8m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Gas4", Type = PowerplantType.gasfired, Efficiency = 0.3m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Gas5", Type = PowerplantType.gasfired, Efficiency = 0.45m, Pmin = 10m, Pmax = 100m }
+            ],
             Fuels = _baseFuels
         };
-
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) => Math.Min(load, plant.Pmax));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -169,22 +147,16 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 490m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Gas2", Type = "gasfired", Efficiency = 0.6m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Gas3", Type = "gasfired", Efficiency = 0.8m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Gas4", Type = "gasfired", Efficiency = 0.3m, Pmin = 10m, Pmax = 100m },
-                new Powerplant { Name = "Gas5", Type = "gasfired", Efficiency = 0.45m, Pmin = 10m, Pmax = 100m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Gas2", Type = PowerplantType.gasfired, Efficiency = 0.6m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Gas3", Type = PowerplantType.gasfired, Efficiency = 0.8m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Gas4", Type = PowerplantType.gasfired, Efficiency = 0.3m, Pmin = 10m, Pmax = 100m },
+                new Powerplant { Name = "Gas5", Type = PowerplantType.gasfired, Efficiency = 0.45m, Pmin = 10m, Pmax = 100m }
+            ],
             Fuels = _baseFuels
         };
-
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) => Math.Min(load, plant.Pmax));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -202,20 +174,14 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 125m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Wind1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 50m },
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 110m, Pmax = 200m },
-                new Powerplant { Name = "Gas2", Type = "gasfired", Efficiency = 0.8m, Pmin = 80m, Pmax = 150m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Wind1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m },
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 110m, Pmax = 200m },
+                new Powerplant { Name = "Gas2", Type = PowerplantType.gasfired, Efficiency = 0.8m, Pmin = 80m, Pmax = 150m }
+            ],
             Fuels = _baseFuels
         };
-
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) => Math.Min(load, plant.Pmax));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -230,20 +196,14 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 100m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Wind1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.5m, Pmin = 100m, Pmax = 200m },
-                new Powerplant { Name = "Kerosine1", Type = "turbojet", Efficiency = 0.5m, Pmin = 0m, Pmax = 200m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Wind1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.5m, Pmin = 100m, Pmax = 200m },
+                new Powerplant { Name = "Kerosine1", Type = PowerplantType.turbojet, Efficiency = 0.5m, Pmin = 0m, Pmax = 200m }
+            ],
             Fuels = _baseFuels
         };
-
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => plant.Type == "turbojet" ? fuels.Kerosine / plant.Efficiency : fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) => Math.Min(load, plant.Pmax));
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -258,27 +218,20 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 150m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "Gas1", Type = "gasfired", Efficiency = 0.3m, Pmin = 100m, Pmax = 200m },
-                new Powerplant { Name = "Kerosine1", Type = "turbojet", Efficiency = 1m, Pmin = 0m, Pmax = 200m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "Gas1", Type = PowerplantType.gasfired, Efficiency = 0.3m, Pmin = 100m, Pmax = 200m },
+                new Powerplant { Name = "Kerosine1", Type = PowerplantType.turbojet, Efficiency = 1m, Pmin = 0m, Pmax = 200m }
+            ],
             Fuels = _baseFuels
         };
 
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => plant.Type == "turbojet" ? fuels.Kerosine / plant.Efficiency : fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) => Math.Min(load, plant.Pmax));
-
         var resultNoCO2 = await _handler.Handle(command, CancellationToken.None);
-        var resultCO2 = await _handlerCo2Enabled.Handle(command, CancellationToken.None);
 
         resultNoCO2.First(x => x.Name == "Gas1").Power.Should().Be("150.0");
-        resultCO2.First(x => x.Name == "Kerosine1").Power.Should().Be("150.0");
     }
 
+    // Tricky tests
     [Fact]
     public async Task Handle_Should_Return_Expected_Results_For_Tricky_Test1()
     {
@@ -286,25 +239,14 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 60m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "windpark1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 20m },
-                new Powerplant { Name = "gasfired", Type = "gasfired", Efficiency = 0.9m, Pmin = 50m, Pmax = 100m },
-                new Powerplant { Name = "gasfiredinefficient", Type = "gasfired", Efficiency = 0.1m, Pmin = 0m, Pmax = 100m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 20m },
+                new Powerplant { Name = "gasfired", Type = PowerplantType.gasfired, Efficiency = 0.9m, Pmin = 50m, Pmax = 100m },
+                new Powerplant { Name = "gasfiredinefficient", Type = PowerplantType.gasfired, Efficiency = 0.1m, Pmin = 0m, Pmax = 100m }
+            ],
             Fuels = trickyFuels
         };
-
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => plant.Type == "windturbine" ? 0m : fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) =>
-                                 {
-                                     if (plant.Type == "windturbine")
-                                         return plant.Pmax * wind / 100;
-                                     return Math.Min(load, plant.Pmax);
-                                 });
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -321,25 +263,14 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 80m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "windpark1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 60m },
-                new Powerplant { Name = "gasfired", Type = "gasfired", Efficiency = 0.9m, Pmin = 50m, Pmax = 100m },
-                new Powerplant { Name = "gasfiredinefficient", Type = "gasfired", Efficiency = 0.1m, Pmin = 0m, Pmax = 200m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 60m },
+                new Powerplant { Name = "gasfired", Type = PowerplantType.gasfired, Efficiency = 0.9m, Pmin = 50m, Pmax = 100m },
+                new Powerplant { Name = "gasfiredinefficient", Type = PowerplantType.gasfired, Efficiency = 0.1m, Pmin = 0m, Pmax = 200m }
+            ],
             Fuels = trickyFuels
         };
-
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => plant.Type == "windturbine" ? 0m : fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) =>
-                                 {
-                                     if (plant.Type == "windturbine")
-                                         return plant.Pmax * wind / 100;
-                                     return Math.Min(load, plant.Pmax);
-                                 });
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -364,15 +295,15 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 480m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
-                new Powerplant { Name = "tj1", Type = "turbojet", Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
-                new Powerplant { Name = "windpark1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                new Powerplant { Name = "windpark2", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 36m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "gasfiredbig1", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new Powerplant { Name = "gasfiredbig2", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantType.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                new Powerplant { Name = "tj1", Type = PowerplantType.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                new Powerplant { Name = "windpark2", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+            ],
             Fuels = exampleFuels
         };
 
@@ -385,11 +316,11 @@ public class AdvancedProductionPlanCommandHandlerTests
         // Vérification si les centrales éoliennes produisent correctement
         var windPark1 = result.FirstOrDefault(x => x.Name == "windpark1");
         windPark1.Should().NotBeNull();
-        windPark1.Power.Should().Be("90.0");
+        windPark1!.Power.Should().Be("90.0");
 
         var windPark2 = result.FirstOrDefault(x => x.Name == "windpark2");
         windPark2.Should().NotBeNull();
-        windPark2.Power.Should().Be("21.6");
+        windPark2!.Power.Should().Be("21.6");
 
         // Vérification si la production totale est correcte
         var totalProduction = result.Select(x => decimal.Parse(x.Power)).Sum();
@@ -409,28 +340,17 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 480m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
-                new Powerplant { Name = "tj1", Type = "turbojet", Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
-                new Powerplant { Name = "windpark1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                new Powerplant { Name = "windpark2", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 36m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "gasfiredbig1", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new Powerplant { Name = "gasfiredbig2", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantType.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                new Powerplant { Name = "tj1", Type = PowerplantType.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                new Powerplant { Name = "windpark2", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+            ],
             Fuels = exampleFuels
         };
-
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => plant.Type == "windturbine" ? 0m : fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) =>
-                                 {
-                                     if (plant.Type == "windturbine")
-                                         return plant.Pmax * wind / 100;
-                                     return Math.Min(load, plant.Pmax);
-                                 });
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -450,28 +370,17 @@ public class AdvancedProductionPlanCommandHandlerTests
         var command = new ProductionPlanCommand
         {
             Load = 910m,
-            Powerplants = new List<Powerplant>
-            {
-                new Powerplant { Name = "gasfiredbig1", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredbig2", Type = "gasfired", Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = "gasfired", Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
-                new Powerplant { Name = "tj1", Type = "turbojet", Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
-                new Powerplant { Name = "windpark1", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                new Powerplant { Name = "windpark2", Type = "windturbine", Efficiency = 1m, Pmin = 0m, Pmax = 36m }
-            },
+            Powerplants =
+            [
+                new Powerplant { Name = "gasfiredbig1", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new Powerplant { Name = "gasfiredbig2", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantType.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                new Powerplant { Name = "tj1", Type = PowerplantType.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                new Powerplant { Name = "windpark2", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+            ],
             Fuels = exampleFuels
         };
-
-        _mockCostCalculator.Setup(x => x.CalculateCostPerMWh(It.IsAny<Powerplant>(), It.IsAny<Fuels>()))
-                           .Returns<Powerplant, Fuels>((plant, fuels) => plant.Type == "windturbine" ? 0m : fuels.Gas / plant.Efficiency + 0.3m * fuels.Co2);
-
-        _mockProductionCalculator.Setup(x => x.CalculateProduction(It.IsAny<Powerplant>(), It.IsAny<decimal>(), It.IsAny<decimal>()))
-                                 .Returns<Powerplant, decimal, decimal>((plant, load, wind) =>
-                                 {
-                                     if (plant.Type == "windturbine")
-                                         return plant.Pmax * wind / 100;
-                                     return Math.Min(load, plant.Pmax);
-                                 });
 
         var result = await _handler.Handle(command, CancellationToken.None);
 

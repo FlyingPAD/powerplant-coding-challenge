@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using powerplant_coding_challenge.Helpers;
 using Serilog.Context;
 using System.Text.Json;
 
