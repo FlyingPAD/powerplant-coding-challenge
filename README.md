@@ -23,7 +23,7 @@ This project is an ASP.NET Core web application that calculates and allocates po
 
    dotnet run
 
-4. **Access the application** at `https://localhost:8888`.
+4. **Access the application** at `http://localhost:8888`.
 
 ### Running via Docker
 
@@ -35,10 +35,9 @@ This project is an ASP.NET Core web application that calculates and allocates po
 
    docker run -d -p 8888:8888 powerplant-coding-challenge
 
-3. **Access the application** at `https://localhost:8888`.
+3. **Access the application** at `http://localhost:8888`.
 
 ## Notes
 
 - Ensure you have the necessary prerequisites installed.
-- The application runs on `https://localhost:8888` by default, as HTTPS redirection is enabled.
 - The default port for Docker is `8888`, which can be adjusted as needed.
