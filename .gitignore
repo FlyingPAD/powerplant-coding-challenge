@@ -15,14 +15,13 @@ mono_crash.*
 **/logs/
 **/bld/
 
+#Tests
+TestResults/
+
 # Visual Studio working directories and files
 .vs/
 .vscode/
 .idea/
-
-# Docker-related files
-Dockerfile
-.dockerignore
 
 # NuGet Packages
 *.nupkg
