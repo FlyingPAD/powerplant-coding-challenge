@@ -10,34 +10,29 @@ public class Powerplant
 
     public decimal CalculateProduction(decimal load, decimal windPercentage)
     {
-        decimal production;
-
-        if (Type == PowerplantType.windturbine)
+        return Type switch
         {
-            // Calculate wind turbine production based on wind percentage
-            decimal windFactor = windPercentage / 100.0m;
-            production = Pmax * windFactor;
+            PowerplantType.windturbine => CalculateWindProduction(load, windPercentage),
+            PowerplantType.gasfired or PowerplantType.turbojet => CalculateThermalProduction(load),
+            _ => throw new NotImplementedException($"Production calculation for {Type} is not implemented.")
+        };
+    }
 
-            // Adjust if the remaining load is less than the calculated production
-            if (production > load)
-            {
-                production = load;
-            }
-        }
-        else
-        {
-            // For thermal plants, ensure production is within Pmin and Pmax
-            if (load < Pmin)
-            {
-                production = 0; // Skip if remaining load is less than Pmin
-            }
-            else
-            {
-                production = Math.Min(Pmax, load); // Produce as much as needed but no more than Pmax
-            }
-        }
+    private decimal CalculateWindProduction(decimal load, decimal windPercentage)
+    {
+        decimal production = Pmax * (windPercentage / 100.0m);
 
-        return production;
+        // Si la production dépasse la charge restante, on ajuste à la charge.
+        return Math.Min(production, load);
+    }
+
+    private decimal CalculateThermalProduction(decimal load)
+    {
+        // Si la charge restante est inférieure à Pmin, on ne produit rien.
+        if (load < Pmin) return 0m;
+
+        // Produire autant que possible, mais ne pas dépasser Pmax ni la charge restante.
+        return Math.Min(Pmax, load);
     }
 
     public decimal CalculateCostPerMWh(Fuels fuels)
