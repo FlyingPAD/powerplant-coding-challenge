@@ -3,7 +3,7 @@ using powerplant_coding_challenge.Features;
 using powerplant_coding_challenge.Models;
 using Xunit;
 
-namespace powerplant_coding_challenge.Tests.Features;
+namespace powerplant_coding_challenge.Tests;
 
 public class ProductionPlanCommandValidatorTests
 {

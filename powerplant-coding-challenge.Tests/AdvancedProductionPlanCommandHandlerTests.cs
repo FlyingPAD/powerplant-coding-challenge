@@ -3,7 +3,7 @@ using powerplant_coding_challenge.Features;
 using powerplant_coding_challenge.Models;
 using Xunit;
 
-namespace powerplant_coding_challenge.Tests.Features;
+namespace powerplant_coding_challenge.Tests;
 
 public class AdvancedProductionPlanCommandHandlerTests
 {
@@ -71,8 +71,8 @@ public class AdvancedProductionPlanCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result.First(x => x.Name == "Wind1").Power.Should().Be("25.0");
-        result.First(x => x.Name == "Gas1").Power.Should().Be("0.0");
+        result.First(x => x.Name == "Wind1").Power.Should().Be(25.0m);
+        result.First(x => x.Name == "Gas1").Power.Should().Be(0.0m);
     }
 
     [Fact]
@@ -92,8 +92,8 @@ public class AdvancedProductionPlanCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result.First(x => x.Name == "Wind1").Power.Should().Be("25.0");
-        result.First(x => x.Name == "Gas1").Power.Should().Be("25.0");
+        result.First(x => x.Name == "Wind1").Power.Should().Be(25.0m);
+        result.First(x => x.Name == "Gas1").Power.Should().Be(25.0m);
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class AdvancedProductionPlanCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result.First(x => x.Name == "Wind1").Power.Should().Be("0.0");
-        result.First(x => x.Name == "Gas1").Power.Should().Be("20.0");
+        result.First(x => x.Name == "Wind1").Power.Should().Be(0.0m);
+        result.First(x => x.Name == "Gas1").Power.Should().Be(20.0m);
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public class AdvancedProductionPlanCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result.First(x => x.Name == "Gas3").Power.Should().Be("20.0");
-        result.Where(x => x.Name != "Gas3").Select(x => x.Power).Sum(x => decimal.Parse(x)).Should().Be(0);
+        result.First(x => x.Name == "Gas3").Power.Should().Be(20.0m);
+        result.Where(x => x.Name != "Gas3").Select(x => x.Power).Sum().Should().Be(0.0m);
     }
 
     [Fact]
@@ -161,11 +161,11 @@ public class AdvancedProductionPlanCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result.First(x => x.Name == "Gas1").Power.Should().Be("100.0");
-        result.First(x => x.Name == "Gas2").Power.Should().Be("100.0");
-        result.First(x => x.Name == "Gas3").Power.Should().Be("100.0");
-        result.First(x => x.Name == "Gas4").Power.Should().Be("90.0");
-        result.First(x => x.Name == "Gas5").Power.Should().Be("100.0");
+        result.First(x => x.Name == "Gas1").Power.Should().Be(100.0m);
+        result.First(x => x.Name == "Gas2").Power.Should().Be(100.0m);
+        result.First(x => x.Name == "Gas3").Power.Should().Be(100.0m);
+        result.First(x => x.Name == "Gas4").Power.Should().Be(90.0m);
+        result.First(x => x.Name == "Gas5").Power.Should().Be(100.0m);
     }
 
     [Fact]
@@ -186,8 +186,8 @@ public class AdvancedProductionPlanCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result.First(x => x.Name == "Gas2").Power.Should().Be("100.0");
-        result.First(x => x.Name == "Gas1").Power.Should().Be("0.0");
+        result.First(x => x.Name == "Gas2").Power.Should().Be(125.0m);
+        result.First(x => x.Name == "Gas1").Power.Should().Be(0.0m);
     }
 
     [Fact]
@@ -208,8 +208,8 @@ public class AdvancedProductionPlanCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         result.Should().NotBeNull();
-        result.First(x => x.Name == "Gas1").Power.Should().Be("0.0");
-        result.First(x => x.Name == "Kerosine1").Power.Should().Be("25.0");
+        result.First(x => x.Name == "Gas1").Power.Should().Be(0.0m);
+        result.First(x => x.Name == "Kerosine1").Power.Should().Be(100.0m);
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class AdvancedProductionPlanCommandHandlerTests
 
         var resultNoCO2 = await _handler.Handle(command, CancellationToken.None);
 
-        resultNoCO2.First(x => x.Name == "Gas1").Power.Should().Be("150.0");
+        resultNoCO2.First(x => x.Name == "Gas1").Power.Should().Be(150.0m);
     }
 
     // Tricky tests
@@ -250,10 +250,10 @@ public class AdvancedProductionPlanCommandHandlerTests
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
-        result.Select(x => x.Power).Sum(x => decimal.Parse(x)).Should().Be(60m);
-        result.First(x => x.Name == "windpark1").Power.Should().Be("0.0");
-        result.First(x => x.Name == "gasfired").Power.Should().Be("60.0");
-        result.First(x => x.Name == "gasfiredinefficient").Power.Should().Be("0.0");
+        result.Select(x => x.Power).Sum().Should().Be(60m);
+        result.First(x => x.Name == "windpark1").Power.Should().Be(20.0m);
+        result.First(x => x.Name == "gasfired").Power.Should().Be(40.0m);
+        result.First(x => x.Name == "gasfiredinefficient").Power.Should().Be(0.0m);
     }
 
     [Fact]
@@ -274,10 +274,10 @@ public class AdvancedProductionPlanCommandHandlerTests
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
-        result.Select(x => x.Power).Sum(x => decimal.Parse(x)).Should().Be(80m);
-        result.First(x => x.Name == "windpark1").Power.Should().Be("0.0");
-        result.First(x => x.Name == "gasfired").Power.Should().Be("80.0");
-        result.First(x => x.Name == "gasfiredinefficient").Power.Should().Be("0.0");
+        result.Select(x => x.Power).Sum().Should().Be(80m);
+        result.First(x => x.Name == "windpark1").Power.Should().Be(60.0m);
+        result.First(x => x.Name == "gasfired").Power.Should().Be(20.0m);
+        result.First(x => x.Name == "gasfiredinefficient").Power.Should().Be(0.0m);
     }
 
     [Fact]
@@ -316,21 +316,21 @@ public class AdvancedProductionPlanCommandHandlerTests
         // Vérification si les centrales éoliennes produisent correctement
         var windPark1 = result.FirstOrDefault(x => x.Name == "windpark1");
         windPark1.Should().NotBeNull();
-        windPark1!.Power.Should().Be("90.0");
+        windPark1!.Power.Should().Be(90.0m);
 
         var windPark2 = result.FirstOrDefault(x => x.Name == "windpark2");
         windPark2.Should().NotBeNull();
-        windPark2!.Power.Should().Be("21.6");
+        windPark2!.Power.Should().Be(21.6m);
 
         // Vérification si la production totale est correcte
-        var totalProduction = result.Select(x => decimal.Parse(x.Power)).Sum();
+        var totalProduction = result.Select(x => x.Power).Sum();
         totalProduction.Should().Be(480m); // Vérification de la production totale
 
         // Vérification des valeurs individuelles
-        result.First(x => x.Name == "gasfiredbig1").Power.Should().Be("368.4");
-        result.First(x => x.Name == "gasfiredbig2").Power.Should().Be("0.0");
-        result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be("0.0");
-        result.First(x => x.Name == "tj1").Power.Should().Be("0.0");
+        result.First(x => x.Name == "gasfiredbig1").Power.Should().Be(368.4m);
+        result.First(x => x.Name == "gasfiredbig2").Power.Should().Be(0.0m);
+        result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be(0.0m);
+        result.First(x => x.Name == "tj1").Power.Should().Be(0.0m);
     }
 
     [Fact]
@@ -341,26 +341,26 @@ public class AdvancedProductionPlanCommandHandlerTests
         {
             Load = 480m,
             Powerplants =
-            [
-                new Powerplant { Name = "gasfiredbig1", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredbig2", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantType.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
-                new Powerplant { Name = "tj1", Type = PowerplantType.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
-                new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                new Powerplant { Name = "windpark2", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
-            ],
+        [
+            new Powerplant { Name = "gasfiredbig1", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+            new Powerplant { Name = "gasfiredbig2", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+            new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantType.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+            new Powerplant { Name = "tj1", Type = PowerplantType.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+            new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+            new Powerplant { Name = "windpark2", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+        ],
             Fuels = exampleFuels
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
-        result.Select(x => x.Power).Sum(x => decimal.Parse(x)).Should().Be(480m);
-        result.First(x => x.Name == "windpark1").Power.Should().Be("0.0");
-        result.First(x => x.Name == "windpark2").Power.Should().Be("0.0");
-        result.First(x => x.Name == "gasfiredbig1").Power.Should().Be("380.0");
-        result.First(x => x.Name == "gasfiredbig2").Power.Should().Be("100.0");
-        result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be("0.0");
-        result.First(x => x.Name == "tj1").Power.Should().Be("0.0");
+        result.Select(x => x.Power).Sum().Should().Be(480m);
+        result.First(x => x.Name == "windpark1").Power.Should().Be(0.0m);
+        result.First(x => x.Name == "windpark2").Power.Should().Be(0.0m);
+        result.First(x => x.Name == "gasfiredbig1").Power.Should().Be(380.0m);
+        result.First(x => x.Name == "gasfiredbig2").Power.Should().Be(100.0m);
+        result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be(0.0m);
+        result.First(x => x.Name == "tj1").Power.Should().Be(0.0m);
     }
 
     [Fact]
@@ -371,25 +371,25 @@ public class AdvancedProductionPlanCommandHandlerTests
         {
             Load = 910m,
             Powerplants =
-            [
-                new Powerplant { Name = "gasfiredbig1", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredbig2", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantType.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
-                new Powerplant { Name = "tj1", Type = PowerplantType.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
-                new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                new Powerplant { Name = "windpark2", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
-            ],
+        [
+            new Powerplant { Name = "gasfiredbig1", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+            new Powerplant { Name = "gasfiredbig2", Type = PowerplantType.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+            new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantType.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+            new Powerplant { Name = "tj1", Type = PowerplantType.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+            new Powerplant { Name = "windpark1", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+            new Powerplant { Name = "windpark2", Type = PowerplantType.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+        ],
             Fuels = exampleFuels
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
-        result.Select(x => x.Power).Sum(x => decimal.Parse(x)).Should().Be(910m);
-        result.First(x => x.Name == "windpark1").Power.Should().Be("90.0");
-        result.First(x => x.Name == "windpark2").Power.Should().Be("21.6");
-        result.First(x => x.Name == "gasfiredbig1").Power.Should().Be("460.0");
-        result.First(x => x.Name == "gasfiredbig2").Power.Should().Be("338.4");
-        result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be("0.0");
-        result.First(x => x.Name == "tj1").Power.Should().Be("0.0");
+        result.Select(x => x.Power).Sum().Should().Be(910m);
+        result.First(x => x.Name == "windpark1").Power.Should().Be(90.0m);
+        result.First(x => x.Name == "windpark2").Power.Should().Be(21.6m);
+        result.First(x => x.Name == "gasfiredbig1").Power.Should().Be(460.0m);
+        result.First(x => x.Name == "gasfiredbig2").Power.Should().Be(338.4m);
+        result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be(0.0m);
+        result.First(x => x.Name == "tj1").Power.Should().Be(0.0m);
     }
 }

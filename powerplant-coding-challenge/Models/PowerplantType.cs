@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace powerplant_coding_challenge.Models
+namespace powerplant_coding_challenge.Models;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PowerplantType
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum PowerplantType
-    {
-        gasfired,
-        turbojet,
-        windturbine
-    }
+    gasfired,
+    turbojet,
+    windturbine
 }

@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using powerplant_coding_challenge.Helpers;
 using powerplant_coding_challenge.Models;
-using System.Globalization;
 
 namespace powerplant_coding_challenge.Features;
 
@@ -24,7 +23,7 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
         {
             foreach (var plant in command.Powerplants)
             {
-                response.Add(new ProductionPlanCommandResponse(plant.Name, 0.0m));
+                response.Add(new ProductionPlanCommandResponse(plant.Name, 0m));
             }
             return await Task.FromResult(response);
         }
@@ -75,7 +74,7 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
         {
             if (remainingLoad <= 0)
             {
-                response.Add(new ProductionPlanCommandResponse(plant.Name, 0));
+                response.Add(new ProductionPlanCommandResponse(plant.Name, 0m));
                 continue;
             }
 
@@ -93,7 +92,7 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
             }
             else
             {
-                response.Add(new ProductionPlanCommandResponse(plant.Name, 0));
+                response.Add(new ProductionPlanCommandResponse(plant.Name, 0m));
                 LoggingHelper.LogSkippedPowerplant(plant);
             }
         }
@@ -109,7 +108,7 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
         {
             if (!response.Any(r => r.Name == plant.Name))
             {
-                response.Add(new ProductionPlanCommandResponse(plant.Name, 0.0m));
+                response.Add(new ProductionPlanCommandResponse(plant.Name, 0m));
             }
         }
 
@@ -128,13 +127,13 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
                 var productionResponse = response.FirstOrDefault(r => r.Name == plant.Name);
                 if (productionResponse != null)
                 {
-                    decimal currentProduction = decimal.Parse(productionResponse.Power, CultureInfo.InvariantCulture);
+                    decimal currentProduction = productionResponse.Power;
                     decimal increase = Math.Min(remainingLoad, plant.Pmax - currentProduction);
 
                     if (increase > 0)
                     {
                         currentProduction += increase;
-                        productionResponse.Power = currentProduction.ToString("F1", CultureInfo.InvariantCulture);
+                        productionResponse.Power = currentProduction;
                         remainingLoad -= increase;
 
                         decimal cost = increase * plant.CalculateCostPerMWh(command.Fuels);
@@ -153,13 +152,13 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
                 var productionResponse = response.FirstOrDefault(r => r.Name == plant.Name);
                 if (productionResponse != null)
                 {
-                    decimal currentProduction = decimal.Parse(productionResponse.Power, CultureInfo.InvariantCulture);
+                    decimal currentProduction = productionResponse.Power;
                     decimal decrease = Math.Min(-remainingLoad, currentProduction - plant.Pmin);
 
                     if (decrease > 0)
                     {
                         currentProduction -= decrease;
-                        productionResponse.Power = currentProduction.ToString("F1", CultureInfo.InvariantCulture);
+                        productionResponse.Power = currentProduction;
                         remainingLoad += decrease;
 
                         decimal cost = decrease * plant.CalculateCostPerMWh(command.Fuels);
@@ -183,23 +182,23 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
         foreach (var plant in sortedPowerplants)
         {
             var productionResponse = response.First(r => r.Name == plant.Name);
-            decimal currentProduction = decimal.Parse(productionResponse.Power, CultureInfo.InvariantCulture);
+            decimal currentProduction = productionResponse.Power;
 
             if (remainingLoad > 0 && currentProduction < plant.Pmax)
             {
                 decimal adjustment = Math.Min(remainingLoad, plant.Pmax - currentProduction);
-                productionResponse.Power = (currentProduction + adjustment).ToString("F1", CultureInfo.InvariantCulture);
+                productionResponse.Power = currentProduction + adjustment;
                 remainingLoad -= adjustment;
 
-                LoggingHelper.LogProductionCost(decimal.Parse(productionResponse.Power), adjustment * plant.CalculateCostPerMWh(fuels));
+                LoggingHelper.LogProductionCost(productionResponse.Power, adjustment * plant.CalculateCostPerMWh(fuels));
             }
             else if (remainingLoad < 0 && currentProduction > plant.Pmin)
             {
                 decimal adjustment = Math.Min(-remainingLoad, currentProduction - plant.Pmin);
-                productionResponse.Power = (currentProduction - adjustment).ToString("F1", CultureInfo.InvariantCulture);
+                productionResponse.Power = currentProduction - adjustment;
                 remainingLoad += adjustment;
 
-                LoggingHelper.LogProductionCost(decimal.Parse(productionResponse.Power), adjustment * plant.CalculateCostPerMWh(fuels));
+                LoggingHelper.LogProductionCost(productionResponse.Power, adjustment * plant.CalculateCostPerMWh(fuels));
             }
 
             if (remainingLoad == 0)

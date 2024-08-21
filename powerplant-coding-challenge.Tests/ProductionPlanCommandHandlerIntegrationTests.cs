@@ -3,7 +3,7 @@ using powerplant_coding_challenge.Features;
 using powerplant_coding_challenge.Models;
 using Xunit;
 
-namespace powerplant_coding_challenge.Tests.Features
+namespace powerplant_coding_challenge.Tests
 {
     public class ProductionPlanCommandHandlerIntegrationTests
     {
@@ -37,12 +37,12 @@ namespace powerplant_coding_challenge.Tests.Features
 
             var expectedValues = new[]
             {
-                new { Name = "windpark1", Power = "90.0" },
-                new { Name = "windpark2", Power = "21.6" },
-                new { Name = "gasfiredbig1", Power = "368.4" },
-                new { Name = "gasfiredbig2", Power = "0.0" },
-                new { Name = "gasfiredsomewhatsmaller", Power = "0.0" },
-                new { Name = "tj1", Power = "0.0" }
+                new { Name = "windpark1", Power = 90.0m },
+                new { Name = "windpark2", Power = 21.6m },
+                new { Name = "gasfiredbig1", Power = 368.4m },
+                new { Name = "gasfiredbig2", Power = 0.0m },
+                new { Name = "gasfiredsomewhatsmaller", Power = 0.0m },
+                new { Name = "tj1", Power = 0.0m }
             };
 
             for (int i = 0; i < result.Count; i++)
@@ -79,12 +79,22 @@ namespace powerplant_coding_challenge.Tests.Features
             // Assert
             result.Should().NotBeNull();
             result.Should().HaveCount(6);
-            result[0].Power.Should().Be("0.0"); // windpark1
-            result[1].Power.Should().Be("0.0"); // windpark2
-            result[2].Power.Should().Be("460.0"); // gasfiredbig1
-            result[3].Power.Should().Be("4.0"); // gasfiredbig2
-            result[4].Power.Should().Be("0.0"); // gasfiredsomewhatsmaller
-            result[5].Power.Should().Be("16.0"); // tj1
+
+            var expectedValues = new[]
+            {
+                new { Name = "windpark1", Power = 0.0m },
+                new { Name = "windpark2", Power = 0.0m },
+                new { Name = "gasfiredbig1", Power = 460.0m },
+                new { Name = "gasfiredbig2", Power = 4.0m },
+                new { Name = "gasfiredsomewhatsmaller", Power = 0.0m },
+                new { Name = "tj1", Power = 16.0m }
+            };
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                result[i].Name.Should().Be(expectedValues[i].Name);
+                result[i].Power.Should().Be(expectedValues[i].Power);
+            }
         }
 
         [Fact]
@@ -117,12 +127,12 @@ namespace powerplant_coding_challenge.Tests.Features
 
             var expectedValues = new[]
             {
-                new { Name = "windpark1", Power = "90.0" },
-                new { Name = "windpark2", Power = "21.6" },
-                new { Name = "gasfiredbig1", Power = "460.0" },
-                new { Name = "gasfiredbig2", Power = "338.4" },
-                new { Name = "gasfiredsomewhatsmaller", Power = "0.0" },
-                new { Name = "tj1", Power = "0.0" }
+                new { Name = "windpark1", Power = 90.0m },
+                new { Name = "windpark2", Power = 21.6m },
+                new { Name = "gasfiredbig1", Power = 460.0m },
+                new { Name = "gasfiredbig2", Power = 338.4m },
+                new { Name = "gasfiredsomewhatsmaller", Power = 0.0m },
+                new { Name = "tj1", Power = 0.0m }
             };
 
             for (int i = 0; i < result.Count; i++)
