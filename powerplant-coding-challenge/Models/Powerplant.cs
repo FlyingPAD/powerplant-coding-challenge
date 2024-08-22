@@ -22,16 +22,13 @@ public class Powerplant
     {
         decimal production = Pmax * (windPercentage / 100.0m);
 
-        // Si la production dépasse la charge restante, on ajuste à la charge.
         return Math.Min(production, load);
     }
 
     private decimal CalculateThermalProduction(decimal load)
     {
-        // Si la charge restante est inférieure à Pmin, on ne produit rien.
         if (load < Pmin) return 0m;
 
-        // Produire autant que possible, mais ne pas dépasser Pmax ni la charge restante.
         return Math.Min(Pmax, load);
     }
 

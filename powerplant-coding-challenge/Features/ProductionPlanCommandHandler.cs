@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using powerplant_coding_challenge.Helpers;
 using powerplant_coding_challenge.Models;
+using powerplant_coding_challenge.Services;
+using Serilog;
 
 namespace powerplant_coding_challenge.Features;
 
@@ -13,26 +15,15 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
             return Task.FromResult(command.Powerplants.Select(p => new ProductionPlanCommandResponse(p.Name, 0m)).ToList());
         }
 
-        decimal totalCapacity = command.Powerplants.Sum(p => p.Pmax);
-        if (command.Load > totalCapacity)
-        {
-            throw new InvalidOperationException("La charge demandée dépasse la capacité totale des centrales disponibles.");
-        }
-
-        bool isLoadBelowAllPmin = command.Powerplants
-            .Where(p => p.Type != PowerplantType.windturbine)
-            .All(p => command.Load < p.Pmin);
-
-        if (isLoadBelowAllPmin)
-        {
-            throw new InvalidOperationException("La charge demandée est inférieure au Pmin total des centrales disponibles.");
-        }
+        // Validate the production plan to ensure it can meet the required load.
+        ProductionPlanValidator.ValidateTotalCapacity(command.Powerplants, command.Load);
+        ProductionPlanValidator.ValidateLoadAgainstPmin(command.Powerplants, command.Load);
 
         var response = new List<ProductionPlanCommandResponse>();
         decimal remainingLoad = command.Load;
         decimal totalCost = 0m;
 
-        // Gestion des éoliennes
+        // Handle wind turbines first since their production is dependent on wind percentage.
         foreach (var plant in command.Powerplants.Where(p => p.Type == PowerplantType.windturbine))
         {
             decimal production = plant.CalculateProduction(remainingLoad, command.Fuels.Wind);
@@ -40,14 +31,21 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
             response.Add(new ProductionPlanCommandResponse(plant.Name, production));
 
             LoggingHelper.LogPowerplantEvaluation(plant, production, command.Fuels.Wind);
-            LoggingHelper.LogProductionCost(production, 0); // Pas de coût pour l'éolien
+            LoggingHelper.LogProductionCost(production, 0); // No cost for wind energy.
         }
 
-        // Gestion des autres centrales (triées par coût de production)
+        // Handle the remaining powerplants, ordered by their production cost.
         var sortedPowerplants = command.Powerplants
             .Where(p => p.Type != PowerplantType.windturbine)
             .OrderBy(p => p.CalculateCostPerMWh(command.Fuels))
             .ToList();
+
+        // Logging the order and cost per MWh of each powerplant
+        foreach (var plant in sortedPowerplants)
+        {
+            decimal costPerMWh = plant.CalculateCostPerMWh(command.Fuels);
+            Log.Information("Powerplant: {PlantName}, Cost per MWh: {CostPerMWh}, Type: {Type}", plant.Name, costPerMWh, plant.Type);
+        }
 
         foreach (var plant in sortedPowerplants)
         {
@@ -68,38 +66,18 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
             }
         }
 
-        // Ajustement final
-        AdjustProductionToMatchLoad(response, remainingLoad);
+        // Adjust the final production to match the exact required load.
+        ProductionManager.AdjustProductionToMatchLoad(response, remainingLoad);
 
-        LoggingHelper.LogFinalSummary(command.Load, totalCost);
-
-        return Task.FromResult(response);
-    }
-
-    private static void AdjustProductionToMatchLoad(List<ProductionPlanCommandResponse> response, decimal remainingLoad)
-    {
-        if (remainingLoad == 0) return;
-
-        foreach (var productionResponse in response.OrderByDescending(r => r.Power))
+        // Log the final production costs and any discrepancies.
+        foreach (var productionResponse in response)
         {
-            if (remainingLoad == 0) break;
-
-            decimal adjustment = Math.Min(Math.Abs(remainingLoad), productionResponse.Power);
-
-            if (remainingLoad > 0)
-            {
-                productionResponse.Power += adjustment;
-                remainingLoad -= adjustment;
-            }
-            else
-            {
-                productionResponse.Power -= adjustment;
-                remainingLoad += adjustment;
-            }
-
-            LoggingHelper.LogProductionCost(productionResponse.Power, 0); // Coût à ajuster si nécessaire
+            LoggingHelper.LogProductionCost(productionResponse.Power, 0); // Adjust cost if necessary.
         }
 
         LoggingHelper.LogDiscrepancy(remainingLoad);
+        LoggingHelper.LogFinalSummary(command.Load, totalCost);
+
+        return Task.FromResult(response);
     }
 }

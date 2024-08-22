@@ -51,7 +51,7 @@ public class AdvancedProductionPlanCommandHandlerTests
 
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("La charge demandée est inférieure au Pmin total des centrales disponibles.");
+            .WithMessage("La charge demandée est inférieure au Pmin de chaque centrale non éolienne.");
     }
 
     [Fact]
