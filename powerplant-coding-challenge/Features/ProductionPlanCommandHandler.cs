@@ -8,11 +8,11 @@ namespace powerplant_coding_challenge.Features;
 
 public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanCommand, List<ProductionPlanCommandResponse>>
 {
-    public Task<List<ProductionPlanCommandResponse>> Handle(ProductionPlanCommand command, CancellationToken cancellationToken)
+    public async Task<List<ProductionPlanCommandResponse>> Handle(ProductionPlanCommand command, CancellationToken cancellationToken)
     {
         if (command.Powerplants.Count == 0 || command.Load == 0)
         {
-            return Task.FromResult(command.Powerplants.Select(p => new ProductionPlanCommandResponse(p.Name, 0m)).ToList());
+            return (command.Powerplants.Select(p => new ProductionPlanCommandResponse(p.Name, 0m)).ToList());
         }
 
         // Validate the production plan to ensure it can meet the required load.
@@ -73,6 +73,6 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
         LoggingHelper.LogDiscrepancy(remainingLoad);
         LoggingHelper.LogFinalSummary(command.Load, totalCost);
 
-        return Task.FromResult(response);
+        return response;
     }
 }
