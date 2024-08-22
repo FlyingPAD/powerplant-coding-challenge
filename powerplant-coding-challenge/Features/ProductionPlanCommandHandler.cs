@@ -20,14 +20,12 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
         ProductionPlanValidator.ValidateLoadAgainstPmin(command.Powerplants, command.Load);
 
         var response = new List<ProductionPlanCommandResponse>();
-        decimal remainingLoad = command.Load;
         decimal totalCost = 0m;
 
         // Handle wind turbines first since their production is dependent on wind percentage.
         foreach (var plant in command.Powerplants.Where(p => p.Type == PowerplantType.windturbine))
         {
-            decimal production = plant.CalculateProduction(remainingLoad, command.Fuels.Wind);
-            remainingLoad -= production;
+            decimal production = plant.CalculateProduction(command.Load, command.Fuels.Wind);
             response.Add(new ProductionPlanCommandResponse(plant.Name, production));
 
             LoggingHelper.LogPowerplantEvaluation(plant, production, command.Fuels.Wind);
@@ -46,6 +44,8 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
             decimal costPerMWh = plant.CalculateCostPerMWh(command.Fuels);
             Log.Information("Powerplant: {PlantName}, Cost per MWh: {CostPerMWh}, Type: {Type}", plant.Name, costPerMWh, plant.Type);
         }
+
+        decimal remainingLoad = command.Load - response.Sum(r => r.Power);
 
         foreach (var plant in sortedPowerplants)
         {
@@ -67,14 +67,9 @@ public class ProductionPlanCommandHandler : IRequestHandler<ProductionPlanComman
         }
 
         // Adjust the final production to match the exact required load.
-        ProductionManager.AdjustProductionToMatchLoad(response, remainingLoad);
+        ProductionManager.EnsureTotalProductionMatchesLoad(response, command.Load);
 
         // Log the final production costs and any discrepancies.
-        foreach (var productionResponse in response)
-        {
-            LoggingHelper.LogProductionCost(productionResponse.Power, 0); // Adjust cost if necessary.
-        }
-
         LoggingHelper.LogDiscrepancy(remainingLoad);
         LoggingHelper.LogFinalSummary(command.Load, totalCost);
 
