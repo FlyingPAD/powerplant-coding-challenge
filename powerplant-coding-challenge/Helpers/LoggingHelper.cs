@@ -57,4 +57,9 @@ public static class LoggingHelper
             Log.Information("Discrepancy : {Discrepancy:F1} MWh. The production meets the requested load perfectly.", discrepancy);
         }
     }
+
+    public static void LogRemainingLoadError(decimal remainingLoad)
+    {
+        Log.Error("La charge restante après allocation n'est pas zéro : {RemainingLoad} MWh. Une exception va être lancée.", remainingLoad);
+    }
 }

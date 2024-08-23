@@ -13,11 +13,11 @@ namespace powerplant_coding_challenge.Tests
 
         public AdvancedProductionPlanCommandHandlerTests()
         {
-            var productionManager = new ProductionManager();
-            var productionPlanValidator = new ProductionPlanValidator();
+            var productionPlanValidator = new ProductionPlanValidator(); // Créez le validateur
+            var productionManager = new ProductionManager(productionPlanValidator); // Passez le validateur au manager
 
             // Initialisation du gestionnaire avec les services nécessaires
-            _handler = new ProductionPlanCommandHandler(productionManager, productionPlanValidator);
+            _handler = new ProductionPlanCommandHandler(productionManager); // Passez seulement le manager au handler
 
             // Initialisation des combustibles de base pour les tests
             _baseFuels = new Fuels { Co2 = 20, Kerosine = 50, Gas = 15, Wind = 50 };

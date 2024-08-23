@@ -1,79 +1,61 @@
 ﻿using powerplant_coding_challenge.Features;
-using powerplant_coding_challenge.Models;
+using powerplant_coding_challenge.Helpers;
 
-namespace powerplant_coding_challenge.Services
+namespace powerplant_coding_challenge.Services;
+
+public class ProductionManager(ProductionPlanValidator validator)
 {
-    public class ProductionManager
+    private readonly ProductionPlanValidator _validator = validator;
+
+    public List<ProductionPlanCommandResponse> GenerateProductionPlan(ProductionPlanCommand command)
     {
-        public void EnsureTotalProductionMatchesLoad(List<ProductionPlanCommandResponse> responseList, decimal totalLoad, List<Powerplant> powerplants)
+        // Validation.
+        if (command.Powerplants.Count == 0 || command.Load == 0)
         {
-            decimal totalProduction = responseList.Sum(r => r.Power);
-
-            if (totalProduction > totalLoad)
-            {
-                foreach (var response in responseList.OrderByDescending(r => r.Power))
-                {
-                    decimal overProduction = totalProduction - totalLoad;
-                    if (overProduction <= 0) break;
-
-                    decimal adjustment = Math.Min(overProduction, response.Power);
-
-                    response.Power -= adjustment;
-                    totalProduction -= adjustment;
-                }
-            }
-            else if (totalProduction < totalLoad)
-            {
-                foreach (var response in responseList.OrderBy(r => r.Power))
-                {
-                    decimal underProduction = totalLoad - totalProduction;
-                    if (underProduction <= 0) break;
-
-                    var correspondingPowerplant = powerplants.FirstOrDefault(p => p.Name == response.Name);
-                    if (correspondingPowerplant != null)
-                    {
-                        decimal adjustment = Math.Min(underProduction, correspondingPowerplant.Pmax - response.Power);
-
-                        response.Power += adjustment;
-                        totalProduction += adjustment;
-                    }
-                }
-            }
-
-            if (totalProduction != totalLoad)
-            {
-                decimal discrepancy = totalLoad - totalProduction;
-                if (discrepancy > 0)
-                {
-                    var adjustableResponses = responseList.Where(r => r.Power > 0 && r.Power < powerplants.First(p => p.Name == r.Name).Pmax).OrderBy(r => r.Power).ToList();
-                    foreach (var response in adjustableResponses)
-                    {
-                        if (totalProduction >= totalLoad) break;
-
-                        var correspondingPowerplant = powerplants.FirstOrDefault(p => p.Name == response.Name);
-                        if (correspondingPowerplant != null)
-                        {
-                            decimal adjustment = Math.Min(discrepancy, correspondingPowerplant.Pmax - response.Power);
-                            response.Power += adjustment;
-                            totalProduction += adjustment;
-                            discrepancy -= adjustment;
-                        }
-                    }
-                }
-                else if (discrepancy < 0)
-                {
-                    var adjustableResponses = responseList.Where(r => r.Power > 0).OrderByDescending(r => r.Power).ToList();
-                    foreach (var response in adjustableResponses)
-                    {
-                        if (totalProduction <= totalLoad) break;
-
-                        decimal adjustment = Math.Min(Math.Abs(discrepancy), response.Power);
-                        response.Power -= adjustment;
-                        totalProduction -= adjustment;
-                        discrepancy += adjustment;
-                    }
-                }
-            }
+            return command.Powerplants.Select(p => new ProductionPlanCommandResponse(p.Name, 0m)).ToList();
         }
+        _validator.ValidateTotalCapacity(command.Powerplants, command.Load);
+        _validator.ValidateLoadAgainstPmin(command.Powerplants, command.Load);
+
+        // Allocation.
+        var response = AllocateProduction(command);
+
+        return response;
+    }
+
+    private static List<ProductionPlanCommandResponse> AllocateProduction(ProductionPlanCommand command)
+    {
+        var response = new List<ProductionPlanCommandResponse>();
+
+        // Tri des centrales
+        var sortedPowerplants = command.Powerplants
+            .OrderBy(powerplant => powerplant.CalculateCostPerMWh(command.Fuels))
+            .ToList();
+
+        decimal remainingLoad = command.Load;
+
+        foreach (var plant in sortedPowerplants)
+        {
+            // Calcul de la production de chaque centrale.
+            decimal production = plant.CalculateProduction(remainingLoad, command.Fuels.Wind);
+
+            // Logging de l'évaluation de la centrale.
+            LoggingHelper.LogPowerplantEvaluation(plant, production, command.Fuels.Wind);
+
+            // Ajout de la production de la centrale à la réponse.
+            response.Add(new ProductionPlanCommandResponse(plant.Name, production));
+
+            // Mise à jour de la charge restante après allocation de la production de la centrale actuelle.
+            remainingLoad -= production;
+        }
+
+        // Final Check.
+        if (remainingLoad != 0)
+        {
+            LoggingHelper.LogRemainingLoadError(remainingLoad);
+            throw new InvalidOperationException($"La charge restante n'est pas zéro après le calcul: {remainingLoad} MWh.");
+        }
+
+        return response;
     }
 }

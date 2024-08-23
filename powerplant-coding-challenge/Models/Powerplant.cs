@@ -20,25 +20,24 @@ public class Powerplant
 
     private decimal CalculateWindProduction(decimal load, decimal windPercentage)
     {
-        // Calculate potential production based on wind percentage
-        decimal potentialProduction = Pmax * (windPercentage / 100.0m);
-
-        // If potential production exceeds the load, turn off the wind turbine
-        if (potentialProduction > load)
+        if (windPercentage == 0)
         {
-            return 0m; // Disable the wind turbine because it would overproduce
+            return 0m;
         }
 
-        // Otherwise, return the calculated production
+        decimal potentialProduction = Pmax * (windPercentage / 100.0m);
+
+        if (potentialProduction > load)
+        {
+            return 0m;
+        }
+
         return Math.Min(potentialProduction, load);
     }
 
     private decimal CalculateThermalProduction(decimal load)
     {
-        // If the load is less than Pmin, produce nothing
         if (load < Pmin) return 0m;
-
-        // Produce as much as needed but no more than Pmax
         return Math.Min(Pmax, load);
     }
 
