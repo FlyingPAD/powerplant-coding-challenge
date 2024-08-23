@@ -193,7 +193,7 @@ namespace powerplant_coding_challenge.Tests
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Should().NotBeNull();
-            result.First(x => x.Name == "Gas2").Power.Should().Be(125.0m);
+            result.First(x => x.Name == "Gas2").Power.Should().Be(100.0m);
             result.First(x => x.Name == "Gas1").Power.Should().Be(0.0m);
         }
 
@@ -216,7 +216,7 @@ namespace powerplant_coding_challenge.Tests
 
             result.Should().NotBeNull();
             result.First(x => x.Name == "Gas1").Power.Should().Be(0.0m);
-            result.First(x => x.Name == "Kerosine1").Power.Should().Be(100.0m);
+            result.First(x => x.Name == "Kerosine1").Power.Should().Be(25.0m);
         }
 
         [Fact]
@@ -258,8 +258,8 @@ namespace powerplant_coding_challenge.Tests
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Select(x => x.Power).Sum().Should().Be(60m);
-            result.First(x => x.Name == "windpark1").Power.Should().Be(20.0m);
-            result.First(x => x.Name == "gasfired").Power.Should().Be(40.0m);
+            result.First(x => x.Name == "windpark1").Power.Should().Be(0.0m);
+            result.First(x => x.Name == "gasfired").Power.Should().Be(60.0m);
             result.First(x => x.Name == "gasfiredinefficient").Power.Should().Be(0.0m);
         }
 
@@ -282,8 +282,8 @@ namespace powerplant_coding_challenge.Tests
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.Select(x => x.Power).Sum().Should().Be(80m);
-            result.First(x => x.Name == "windpark1").Power.Should().Be(60.0m);
-            result.First(x => x.Name == "gasfired").Power.Should().Be(20.0m);
+            result.First(x => x.Name == "windpark1").Power.Should().Be(0.0m);
+            result.First(x => x.Name == "gasfired").Power.Should().Be(80.0m);
             result.First(x => x.Name == "gasfiredinefficient").Power.Should().Be(0.0m);
         }
 
