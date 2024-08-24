@@ -3,7 +3,7 @@
 namespace powerplant_coding_challenge.Models;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum PowerplantType
+public enum PowerplantTypeEnumeration
 {
     gasfired,
     turbojet,

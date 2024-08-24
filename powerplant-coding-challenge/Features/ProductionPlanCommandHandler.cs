@@ -1,29 +1,42 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using powerplant_coding_challenge.Helpers;
 using powerplant_coding_challenge.Services;
 using Serilog;
 
 namespace powerplant_coding_challenge.Features;
 
-public class ProductionPlanCommandHandler(ProductionManager productionManager) : IRequestHandler<ProductionPlanCommand, List<ProductionPlanCommandResponse>>
+public class ProductionPlanCommandHandler(ProductionPlanService productionManager, IValidator<ProductionPlanCommand> validator) : IRequestHandler<ProductionPlanCommand, List<ProductionPlanCommandResponse>>
 {
-    private readonly ProductionManager _productionManager = productionManager;
+    private readonly ProductionPlanService _productionManager = productionManager;
+    private readonly IValidator<ProductionPlanCommand> _validator = validator;
 
     public async Task<List<ProductionPlanCommandResponse>> Handle(ProductionPlanCommand command, CancellationToken cancellationToken)
     {
+        // Validation
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            Log.Warning("Validation failed for production plan command: {Errors}", validationResult.Errors);
+            throw new ValidationException(validationResult.Errors);
+        }
+
         Log.Information("Processing production plan for load: {Load} MWh with {PowerplantsCount} powerplants.", command.Load, command.Powerplants.Count);
 
+        // Generate Production Plan
         var response = _productionManager.GenerateProductionPlan(command);
 
+        // Log each powerplant's production
         foreach (var plantResponse in response)
         {
             Log.Information("Powerplant {Name} will produce {Power} MWh.", plantResponse.Name, plantResponse.Power);
         }
 
+        // Calculate and log total production and cost
         var totalProduction = response.Sum(r => r.Power);
-        LoggingHelper.LogFinalSummary(totalProduction, response.Sum(r => r.Power * command.Fuels.Gas)); // Vous pouvez ajuster le coût ici selon le besoin
+        var totalCost = response.Sum(r => r.Power * command.Fuels.Gas);
 
-        await Task.CompletedTask;
+        LoggingHelper.LogFinalSummary(totalProduction, totalCost);
 
         return response;
     }

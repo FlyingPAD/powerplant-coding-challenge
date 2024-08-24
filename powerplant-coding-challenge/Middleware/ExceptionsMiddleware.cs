@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace powerplant_coding_challenge.Middleware;
 
-public class ExceptionHandler(RequestDelegate next)
+public class ExceptionsMiddleware(RequestDelegate next)
 {
     private readonly RequestDelegate _next = next;
 
