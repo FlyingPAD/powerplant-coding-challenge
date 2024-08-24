@@ -1,5 +1,4 @@
 using FluentValidation;
-using MediatR;
 using powerplant_coding_challenge.Features;
 using powerplant_coding_challenge.Middleware;
 using powerplant_coding_challenge.Services;
@@ -25,17 +24,12 @@ public class Program
 
             builder.Host.UseSerilog();
 
-            // Enregistrer FluentValidation et MediatR
             builder.Services.AddValidatorsFromAssemblyContaining<ProductionPlanCommandValidator>();
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
 
-            builder.Services.AddTransient<ProductionManager>();
-            builder.Services.AddTransient<ProductionPlanValidator>();
+            builder.Services.AddTransient<ProductionPlanService>();
+            builder.Services.AddTransient<ProductionPlanValidatorService>();
 
-            // Ajouter le ValidationBehavior au pipeline MediatR
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-            // Ajouter les contrôleurs
             builder.Services.AddControllers();
 
             builder.Services.AddEndpointsApiExplorer();
@@ -49,8 +43,8 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            app.UseMiddleware<RequestLoggingMiddleware>();
-            app.UseMiddleware<ExceptionHandler>();
+            app.UseMiddleware<LoggingMiddleware>();
+            app.UseMiddleware<ExceptionsMiddleware>();
 
             app.UseAuthorization();
 

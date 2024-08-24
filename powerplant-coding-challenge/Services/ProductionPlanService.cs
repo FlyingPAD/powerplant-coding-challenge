@@ -3,9 +3,9 @@ using powerplant_coding_challenge.Helpers;
 
 namespace powerplant_coding_challenge.Services;
 
-public class ProductionManager(ProductionPlanValidator validator)
+public class ProductionPlanService(ProductionPlanValidatorService validator)
 {
-    private readonly ProductionPlanValidator _validator = validator;
+    private readonly ProductionPlanValidatorService _validator = validator;
 
     public List<ProductionPlanCommandResponse> GenerateProductionPlan(ProductionPlanCommand command)
     {
