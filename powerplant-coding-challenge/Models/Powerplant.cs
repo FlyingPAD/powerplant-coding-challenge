@@ -10,42 +10,43 @@ public class Powerplant
 
     public decimal CalculateProduction(decimal load, decimal windPercentage)
     {
-        decimal production;
-
-        if (Type == PowerplantType.windturbine)
+        return Type switch
         {
-            // Calculate wind turbine production based on wind percentage
-            decimal windFactor = windPercentage / 100.0m;
-            production = Pmax * windFactor;
+            PowerplantType.windturbine => CalculateWindProduction(load, windPercentage),
+            PowerplantType.gasfired or PowerplantType.turbojet => CalculateThermalProduction(load),
+            _ => throw new NotImplementedException($"Production calculation for {Type} is not implemented.")
+        };
+    }
 
-            // Adjust if the remaining load is less than the calculated production
-            if (production > load)
-            {
-                production = load;
-            }
-        }
-        else
+    private decimal CalculateWindProduction(decimal load, decimal windPercentage)
+    {
+        if (windPercentage == 0)
         {
-            // For thermal plants, ensure production is within Pmin and Pmax
-            if (load < Pmin)
-            {
-                production = 0; // Skip if remaining load is less than Pmin
-            }
-            else
-            {
-                production = Math.Min(Pmax, load); // Produce as much as needed but no more than Pmax
-            }
+            return 0m;
         }
 
-        return production;
+        decimal potentialProduction = Pmax * (windPercentage / 100.0m);
+
+        if (potentialProduction > load)
+        {
+            return 0m;
+        }
+
+        return Math.Min(potentialProduction, load);
+    }
+
+    private decimal CalculateThermalProduction(decimal load)
+    {
+        if (load < Pmin) return 0m;
+        return Math.Min(Pmax, load);
     }
 
     public decimal CalculateCostPerMWh(Fuels fuels)
     {
         return Type switch
         {
-            PowerplantType.gasfired => (fuels.Gas / Efficiency) + (0.3m * fuels.Co2),
-            PowerplantType.turbojet => fuels.Kerosine / Efficiency,
+            PowerplantType.gasfired => fuels.Gas * (1 / Efficiency),
+            PowerplantType.turbojet => fuels.Kerosine * (1 / Efficiency),
             PowerplantType.windturbine => 0m,
             _ => throw new NotImplementedException($"Cost calculation for {Type} is not implemented.")
         };

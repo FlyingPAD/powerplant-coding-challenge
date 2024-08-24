@@ -29,6 +29,9 @@ public class Program
             builder.Services.AddValidatorsFromAssemblyContaining<ProductionPlanCommandValidator>();
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
 
+            builder.Services.AddTransient<ProductionManager>();
+            builder.Services.AddTransient<ProductionPlanValidator>();
+
             // Ajouter le ValidationBehavior au pipeline MediatR
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
