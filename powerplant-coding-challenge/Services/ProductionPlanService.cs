@@ -148,28 +148,31 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
                 production = remainingLoad;
             }
 
-            var nextPlantIndex = thermalPlants.IndexOf(currentPlant) + 1;
-
-            if (nextPlantIndex < thermalPlants.Count && remainingLoad > production)
-            {
-                var nextPlant = thermalPlants[nextPlantIndex];
-
-                if (remainingLoad - production < nextPlant.Pmin)
-                {
-                    production = remainingLoad - nextPlant.Pmin;
-
-                    if (production < currentPlant.Pmin)
-                    {
-                        production = currentPlant.Pmin;
-                    }
-                }
-            }
+            AdjustProductionForNextPlant(thermalPlants, currentPlant, ref production, remainingLoad);
 
             LoggingHelper.LogPowerplantEvaluation(currentPlant, production, 0);
 
             response.Add(new ProductionPlanCommandResponse(currentPlant.Name, production));
-
             remainingLoad -= production;
+        }
+    }
+
+    private static void AdjustProductionForNextPlant(List<Powerplant> thermalPlants, Powerplant currentPlant, ref decimal production, decimal remainingLoad)
+    {
+        var nextPlantIndex = thermalPlants.IndexOf(currentPlant) + 1;
+
+        if (nextPlantIndex >= thermalPlants.Count || remainingLoad <= production) return;
+
+        var nextPlant = thermalPlants[nextPlantIndex];
+
+        if (remainingLoad - production < nextPlant.Pmin)
+        {
+            production = remainingLoad - nextPlant.Pmin;
+
+            if (production < currentPlant.Pmin)
+            {
+                production = currentPlant.Pmin;
+            }
         }
     }
 }

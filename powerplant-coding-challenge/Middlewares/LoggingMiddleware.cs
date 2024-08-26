@@ -4,8 +4,6 @@ namespace powerplant_coding_challenge.Middlewares;
 
 public class LoggingMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next = next;
-
     public async Task InvokeAsync(HttpContext context)
     {
         // Log Request.
@@ -16,7 +14,7 @@ public class LoggingMiddleware(RequestDelegate next)
         using var responseBody = new MemoryStream();
         context.Response.Body = responseBody;
 
-        await _next(context);
+        await next(context);
 
         // Log Response.
         await LoggingHelper.LogResponseAsync(context);
