@@ -8,13 +8,11 @@ namespace powerplant_coding_challenge.Middlewares;
 
 public class ExceptionsMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next = next;
-
     public async Task Invoke(HttpContext httpContext)
     {
         try
         {
-            await _next(httpContext);
+            await next(httpContext);
         }
         catch (ValidationException ex)
         {

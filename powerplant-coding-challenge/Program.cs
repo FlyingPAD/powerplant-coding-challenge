@@ -1,4 +1,5 @@
 using FluentValidation;
+using MediatR;
 using powerplant_coding_challenge.Features;
 using powerplant_coding_challenge.Middlewares;
 using powerplant_coding_challenge.Services;
@@ -25,7 +26,9 @@ public class Program
             builder.Host.UseSerilog();
 
             builder.Services.AddValidatorsFromAssemblyContaining<ProductionPlanCommandValidator>();
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
+            builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
+
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             builder.Services.AddTransient<ProductionPlanService>();
             builder.Services.AddTransient<ProductionPlanValidatorService>();

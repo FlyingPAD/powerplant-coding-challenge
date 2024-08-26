@@ -16,9 +16,8 @@ namespace powerplant_coding_challenge.Tests
         {
             var productionPlanValidator = new ProductionPlanValidatorService();
             var productionManager = new ProductionPlanService(productionPlanValidator);
-            var commandValidator = new ProductionPlanCommandValidator();
 
-            _handler = new ProductionPlanCommandHandler(productionManager, commandValidator);
+            _handler = new ProductionPlanCommandHandler(productionManager);
 
             _baseFuels = new Fuels { Co2 = 20, Kerosine = 50, Gas = 15, Wind = 50 };
         }

@@ -61,11 +61,6 @@ public static class LoggingHelper
         }
     }
 
-    public static void LogFinalSummary(decimal totalProduction, decimal totalCost)
-    {
-        Log.Information($" -> Load Processed: {totalProduction:F1} MWh | Total Cost: {totalCost:F2} EUR/h");
-    }
-
     public static void LogSkippedWindPlant(Powerplant plant, decimal remainingLoad, decimal windProduction, bool isWindBeneficial)
     {
         Log.Information($@"
