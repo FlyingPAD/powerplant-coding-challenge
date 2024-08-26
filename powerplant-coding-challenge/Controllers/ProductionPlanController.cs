@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using powerplant_coding_challenge.Features;
 
-namespace PowerplantCodingChallenge.Controllers;
+namespace powerplant_coding_challenge.Controllers;
 
 [ApiController]
 [Route("productionplan")]

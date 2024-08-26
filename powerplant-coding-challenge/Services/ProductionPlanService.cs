@@ -10,15 +10,15 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
     public List<ProductionPlanCommandResponse> GenerateProductionPlan(ProductionPlanCommand command)
     {
-        // Validation: Check if the command has no powerplants or if the load is zero.
+        // Validation.
         if (command.Powerplants.Count == 0 || command.Load == 0)
         {
             return command.Powerplants.Select(p => new ProductionPlanCommandResponse(p.Name, 0m)).ToList();
         }
-
         _validator.ValidateTotalCapacity(command.Powerplants, command.Load);
         _validator.ValidateLoadAgainstPmin(command.Powerplants, command.Load);
 
+        // Allocation.
         var response = AllocateProduction(command);
 
         return response;
@@ -26,27 +26,65 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
     private static List<ProductionPlanCommandResponse> AllocateProduction(ProductionPlanCommand command)
     {
-        var remainingLoad = command.Load;
-        var response = new List<ProductionPlanCommandResponse>();
-
-        // Sort powerplants by cost.
+        // Sort powerplants.
         var sortedByCostPowerplants = command.Powerplants
             .OrderBy(powerplant => powerplant.CalculateCostPerMWh(command.Fuels))
             .ToList();
         LoggingHelper.LogSortedPowerplantsByCost(sortedByCostPowerplants, command.Fuels);
 
-        // Allocation.
-        AllocateWindPower(sortedByCostPowerplants, ref remainingLoad, response, command.Fuels.Wind);
-        AllocateThermalPower(sortedByCostPowerplants, ref remainingLoad, response);
+        // Generate Best Scenario.
+        var bestScenario = GenerateBestScenario(sortedByCostPowerplants, command);
 
-        // Final check.
-        if (remainingLoad != 0)
+        return bestScenario;
+    }
+
+    public static List<ProductionPlanCommandResponse> GenerateBestScenario(List<Powerplant> sortedPowerplants, ProductionPlanCommand command)
+    {
+        var scenarios = new List<List<Powerplant>>
         {
-            LoggingHelper.LogRemainingLoadError(remainingLoad);
-            throw new InvalidOperationException($"The remaining load is not zero after the calculation: {remainingLoad} MWh.");
+            sortedPowerplants
+        };
+
+        for (int plantIndex = 0; plantIndex < sortedPowerplants.Count; plantIndex++)
+        {
+            var scenario = sortedPowerplants.Where((_, currentIndex) => currentIndex != plantIndex).ToList();
+            scenarios.Add(scenario);
         }
 
-        return response;
+        List<ProductionPlanCommandResponse> bestScenario = [];
+        var lowestCost = decimal.MaxValue;
+
+        foreach (var scenario in scenarios)
+        {
+            var remainingLoad = command.Load;
+            var response = new List<ProductionPlanCommandResponse>();
+
+            AllocateWindPower(scenario, ref remainingLoad, response, command.Fuels.Wind);
+            AllocateThermalPower(scenario, ref remainingLoad, response);
+
+            var totalCost = CalculateScenarioCost(response, scenario, command.Fuels);
+
+            if (remainingLoad == 0 && totalCost < lowestCost)
+            {
+                lowestCost = totalCost;
+                bestScenario = response;
+            }
+        }
+        bestScenario.AddRange(sortedPowerplants.Where(powerplant => !bestScenario.Select(powerplant => powerplant.Name).Contains(powerplant.Name)).Select(powerplant => new ProductionPlanCommandResponse(powerplant.Name,0.0m)));
+        return bestScenario;
+    }
+
+    private static decimal CalculateScenarioCost(List<ProductionPlanCommandResponse> response, List<Powerplant> scenario, Fuels fuels)
+    {
+        decimal totalCost = 0;
+
+        foreach (var allocation in response)
+        {
+            var powerplant = scenario.First(powerplant => powerplant.Name == allocation.Name);
+            totalCost += allocation.Power * powerplant.CalculateCostPerMWh(fuels);
+        }
+
+        return totalCost;
     }
 
     private static void AllocateWindPower(List<Powerplant> powerplants, ref decimal remainingLoad, List<ProductionPlanCommandResponse> response, decimal windPercentage)
@@ -80,6 +118,7 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
         {
             return false;
         }
+
         foreach (var plant in thermalPlants)
         {
             var production = Math.Min(plant.Pmax, remainingLoad);
