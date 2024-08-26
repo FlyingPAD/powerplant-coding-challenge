@@ -29,7 +29,7 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
         decimal remainingLoad = command.Load;
         var response = new List<ProductionPlanCommandResponse>();
 
-        // Sort powerplants by cost per MWh in ascending order.
+        // Sort powerplants by cost.
         var sortedByCostPowerplants = command.Powerplants
             .OrderBy(powerplant => powerplant.CalculateCostPerMWh(command.Fuels))
             .ToList();
@@ -56,11 +56,9 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
         foreach (var plant in windPlants)
         {
-            // Calculate potential production from the wind plant
             decimal windProduction = plant.CalculateProduction(remainingLoad, windPercentage);
             decimal potentialRemainingLoad = remainingLoad - windProduction;
 
-            // Simulate allocation of thermal plants with the potential remaining load
             bool isWindBeneficial = SimulateThermalAllocation(thermalPlants, potentialRemainingLoad);
 
             if (isWindBeneficial && windProduction <= remainingLoad)
@@ -70,7 +68,7 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
             }
             else
             {
-                // Log the decision not to use this wind plant
+                LoggingHelper.LogSkippedWindPlant(plant, remainingLoad, windProduction, isWindBeneficial);
                 response.Add(new ProductionPlanCommandResponse(plant.Name, 0m));
             }
         }
@@ -87,12 +85,13 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
             if (remainingLoad < plant.Pmin)
             {
-                // If the remaining load is too low to efficiently use this plant, wind power is not beneficial
+                LoggingHelper.LogThermalAllocationCheck(plant, remainingLoad, "Remaining load is too low to efficiently use this plant");
                 return false;
             }
 
             decimal production = Math.Min(plant.Pmax, remainingLoad);
             remainingLoad -= production;
+            LoggingHelper.LogThermalAllocation(plant, production, remainingLoad);
         }
 
         return remainingLoad <= 0;
@@ -102,35 +101,31 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
     {
         var thermalPlants = powerplants.Where(powerplant => powerplant.Type != PowerplantTypeEnumeration.windturbine).ToList();
 
-        // Iterate through the thermal powerplants to allocate production.
-        for (int i = 0; i < thermalPlants.Count; i++)
+        foreach (var currentPlant in thermalPlants)
         {
-            var currentPlant = thermalPlants[i];
-
-            // If the remaining load is less than the plant's minimum production (Pmin), skip this plant.
             if (remainingLoad < currentPlant.Pmin)
             {
                 response.Add(new ProductionPlanCommandResponse(currentPlant.Name, 0m));
                 continue;
             }
 
-            // Calculate the production based on the remaining load and plant's Pmin/Pmax constraints.
             decimal production = currentPlant.CalculateProduction(remainingLoad, 0);
 
-            // If the production exceeds the remaining load, adjust the production to match the remaining load.
             if (production > remainingLoad)
             {
                 production = remainingLoad;
             }
 
-            // Adjust production considering the next plant's minimum production constraint (Pmin).
-            if (i < thermalPlants.Count - 1 && remainingLoad > production)
+            var nextPlantIndex = thermalPlants.IndexOf(currentPlant) + 1;
+
+            if (nextPlantIndex < thermalPlants.Count && remainingLoad > production)
             {
-                var nextPlant = thermalPlants[i + 1];
+                var nextPlant = thermalPlants[nextPlantIndex];
 
                 if (remainingLoad - production < nextPlant.Pmin)
                 {
                     production = remainingLoad - nextPlant.Pmin;
+
                     if (production < currentPlant.Pmin)
                     {
                         production = currentPlant.Pmin;

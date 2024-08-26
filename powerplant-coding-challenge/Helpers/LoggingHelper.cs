@@ -79,5 +79,35 @@ namespace powerplant_coding_challenge.Helpers
         {
             Log.Error("The remaining load after allocation is not zero: {RemainingLoad} MWh. An exception will be thrown.", remainingLoad);
         }
+
+        public static void LogSkippedWindPlant(Powerplant plant, decimal remainingLoad, decimal windProduction, bool isWindBeneficial)
+        {
+            Log.Information(
+                "Skipping Wind Plant {PlantName}:\n" +
+                "  - Remaining Load = {RemainingLoad} MWh\n" +
+                "  - Potential Wind Production = {WindProduction} MWh\n" +
+                "  - Is Wind Beneficial: {IsWindBeneficial}",
+                plant.Name, remainingLoad, windProduction, isWindBeneficial
+            );
+        }
+
+        public static void LogThermalAllocationCheck(Powerplant plant, decimal remainingLoad, string reason)
+        {
+            Log.Information(
+                "Checking thermal allocation for {PlantName}:\n" +
+                "  - Remaining Load = {RemainingLoad} MWh\n" +
+                "  - Reason: {Reason}",
+                plant.Name, remainingLoad, reason
+            );
+        }
+
+        public static void LogThermalAllocation(Powerplant plant, decimal production, decimal remainingLoad)
+        {
+            Log.Information(
+                "Thermal Allocation: {PlantName} allocated {Production} MWh\n" +
+                "  - Remaining Load after = {RemainingLoad} MWh",
+                plant.Name, production, remainingLoad
+            );
+        }
     }
 }
