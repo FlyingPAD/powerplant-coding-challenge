@@ -25,6 +25,7 @@ public class Program
 
             builder.Host.UseSerilog();
 
+            // Register FluentValidation validators and MediatR
             builder.Services.AddValidatorsFromAssemblyContaining<ProductionPlanCommandValidator>();
             builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
 

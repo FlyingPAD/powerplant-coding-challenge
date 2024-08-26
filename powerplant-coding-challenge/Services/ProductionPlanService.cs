@@ -76,7 +76,7 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
     private static decimal CalculateScenarioCost(List<ProductionPlanCommandResponse> response, List<Powerplant> scenario, Fuels fuels)
     {
-        decimal totalCost = 0;
+        var totalCost = 0m;
 
         foreach (var allocation in response)
         {
@@ -141,34 +141,27 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
                 continue;
             }
 
-            var production = currentPlant.CalculateProduction(remainingLoad, 0);
-
-            if (production > remainingLoad)
-            {
-                production = remainingLoad;
-            }
+            var production = Math.Min(currentPlant.Pmax, remainingLoad);
 
             var nextPlantIndex = thermalPlants.IndexOf(currentPlant) + 1;
 
-            if (nextPlantIndex < thermalPlants.Count && remainingLoad > production)
+            if (nextPlantIndex >= thermalPlants.Count)
             {
-                var nextPlant = thermalPlants[nextPlantIndex];
+                LoggingHelper.LogPowerplantEvaluation(currentPlant, production, 0);
+                response.Add(new ProductionPlanCommandResponse(currentPlant.Name, production));
+                remainingLoad -= production;
+                continue;
+            }
 
-                if (remainingLoad - production < nextPlant.Pmin)
-                {
-                    production = remainingLoad - nextPlant.Pmin;
+            var nextPlant = thermalPlants[nextPlantIndex];
 
-                    if (production < currentPlant.Pmin)
-                    {
-                        production = currentPlant.Pmin;
-                    }
-                }
+            if (remainingLoad - production < nextPlant.Pmin)
+            {
+                production = Math.Max(currentPlant.Pmin, remainingLoad - nextPlant.Pmin);
             }
 
             LoggingHelper.LogPowerplantEvaluation(currentPlant, production, 0);
-
             response.Add(new ProductionPlanCommandResponse(currentPlant.Name, production));
-
             remainingLoad -= production;
         }
     }
