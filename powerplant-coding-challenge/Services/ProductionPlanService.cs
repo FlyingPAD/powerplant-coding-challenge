@@ -26,13 +26,13 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
     private static List<ProductionPlanCommandResponse> AllocateProduction(ProductionPlanCommand command)
     {
-        // Sort powerplants.
+        // Sort powerplants by cost.
         var sortedByCostPowerplants = command.Powerplants
             .OrderBy(powerplant => powerplant.CalculateCostPerMWh(command.Fuels))
             .ToList();
         LoggingHelper.LogSortedPowerplantsByCost(sortedByCostPowerplants, command.Fuels);
 
-        // Generate Best Scenario.
+        // Generate best scenario.
         var bestScenario = GenerateBestScenario(sortedByCostPowerplants, command);
 
         return bestScenario;
