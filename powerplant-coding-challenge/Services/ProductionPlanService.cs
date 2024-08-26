@@ -26,7 +26,7 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
     private static List<ProductionPlanCommandResponse> AllocateProduction(ProductionPlanCommand command)
     {
-        decimal remainingLoad = command.Load;
+        var remainingLoad = command.Load;
         var response = new List<ProductionPlanCommandResponse>();
 
         // Sort powerplants by cost.
@@ -56,10 +56,10 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
         foreach (var plant in windPlants)
         {
-            decimal windProduction = plant.CalculateProduction(remainingLoad, windPercentage);
-            decimal potentialRemainingLoad = remainingLoad - windProduction;
+            var windProduction = plant.CalculateProduction(remainingLoad, windPercentage);
+            var potentialRemainingLoad = remainingLoad - windProduction;
 
-            bool isWindBeneficial = SimulateThermalAllocation(thermalPlants, potentialRemainingLoad);
+            var isWindBeneficial = potentialRemainingLoad == 0 || SimulateThermalAllocation(thermalPlants, potentialRemainingLoad);
 
             if (isWindBeneficial && windProduction <= remainingLoad)
             {
@@ -76,20 +76,13 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
     private static bool SimulateThermalAllocation(List<Powerplant> thermalPlants, decimal remainingLoad)
     {
+        if (thermalPlants.All(powerplant => remainingLoad < powerplant.Pmin))
+        {
+            return false;
+        }
         foreach (var plant in thermalPlants)
         {
-            if (remainingLoad <= 0)
-            {
-                return true;
-            }
-
-            if (remainingLoad < plant.Pmin)
-            {
-                LoggingHelper.LogThermalAllocationCheck(plant, remainingLoad, "Remaining load is too low to efficiently use this plant");
-                return false;
-            }
-
-            decimal production = Math.Min(plant.Pmax, remainingLoad);
+            var production = Math.Min(plant.Pmax, remainingLoad);
             remainingLoad -= production;
             LoggingHelper.LogThermalAllocation(plant, production, remainingLoad);
         }
@@ -109,7 +102,7 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
                 continue;
             }
 
-            decimal production = currentPlant.CalculateProduction(remainingLoad, 0);
+            var production = currentPlant.CalculateProduction(remainingLoad, 0);
 
             if (production > remainingLoad)
             {
