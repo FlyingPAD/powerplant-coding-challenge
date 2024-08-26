@@ -52,22 +52,50 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
     private static void AllocateWindPower(List<Powerplant> powerplants, ref decimal remainingLoad, List<ProductionPlanCommandResponse> response, decimal windPercentage)
     {
         var windPlants = powerplants.Where(powerplant => powerplant.Type == PowerplantTypeEnumeration.windturbine).ToList();
+        var thermalPlants = powerplants.Where(powerplant => powerplant.Type != PowerplantTypeEnumeration.windturbine).ToList();
 
         foreach (var plant in windPlants)
         {
-            decimal production = plant.CalculateProduction(remainingLoad, windPercentage);
+            // Calculate potential production from the wind plant
+            decimal windProduction = plant.CalculateProduction(remainingLoad, windPercentage);
+            decimal potentialRemainingLoad = remainingLoad - windProduction;
 
-            if (production > remainingLoad)
+            // Simulate allocation of thermal plants with the potential remaining load
+            bool isWindBeneficial = SimulateThermalAllocation(thermalPlants, potentialRemainingLoad);
+
+            if (isWindBeneficial && windProduction <= remainingLoad)
             {
-                production = 0m;
+                response.Add(new ProductionPlanCommandResponse(plant.Name, windProduction));
+                remainingLoad -= windProduction;
+            }
+            else
+            {
+                // Log the decision not to use this wind plant
+                response.Add(new ProductionPlanCommandResponse(plant.Name, 0m));
+            }
+        }
+    }
+
+    private static bool SimulateThermalAllocation(List<Powerplant> thermalPlants, decimal remainingLoad)
+    {
+        foreach (var plant in thermalPlants)
+        {
+            if (remainingLoad <= 0)
+            {
+                return true;
             }
 
-            LoggingHelper.LogPowerplantEvaluation(plant, production, windPercentage);
+            if (remainingLoad < plant.Pmin)
+            {
+                // If the remaining load is too low to efficiently use this plant, wind power is not beneficial
+                return false;
+            }
 
-            response.Add(new ProductionPlanCommandResponse(plant.Name, production));
-
+            decimal production = Math.Min(plant.Pmax, remainingLoad);
             remainingLoad -= production;
         }
+
+        return remainingLoad <= 0;
     }
 
     private static void AllocateThermalPower(List<Powerplant> powerplants, ref decimal remainingLoad, List<ProductionPlanCommandResponse> response)
