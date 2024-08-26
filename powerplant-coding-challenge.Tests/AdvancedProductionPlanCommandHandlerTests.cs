@@ -32,8 +32,8 @@ namespace powerplant_coding_challenge.Tests
                 Load = 500m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m },
-                    new Powerplant { Name = "Gas2", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m }
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m },
+                    new Powerplant { Name = "Gas2", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m }
                 },
                 Fuels = _baseFuels
             };
@@ -52,8 +52,8 @@ namespace powerplant_coding_challenge.Tests
                 Load = 20m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m },
-                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 50m, Pmax = 100m },
+                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
                 },
                 Fuels = _baseFuels
             };
@@ -72,8 +72,8 @@ namespace powerplant_coding_challenge.Tests
                 Load = 25m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
                 },
                 Fuels = _baseFuels
             };
@@ -94,8 +94,8 @@ namespace powerplant_coding_challenge.Tests
                 Load = 50m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
                 },
                 Fuels = _baseFuels
             };
@@ -116,8 +116,8 @@ namespace powerplant_coding_challenge.Tests
                 Load = 20m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m }
                 },
                 Fuels = _baseFuels
             };
@@ -138,11 +138,11 @@ namespace powerplant_coding_challenge.Tests
                 Load = 20m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Gas2", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.6m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Gas3", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.8m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Gas4", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.3m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Gas5", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.45m, Pmin = 10m, Pmax = 100m }
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Gas2", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.6m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Gas3", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.8m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Gas4", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.3m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Gas5", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.45m, Pmin = 10m, Pmax = 100m }
                 },
                 Fuels = _baseFuels
             };
@@ -163,11 +163,11 @@ namespace powerplant_coding_challenge.Tests
                 Load = 490m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Gas2", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.6m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Gas3", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.8m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Gas4", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.3m, Pmin = 10m, Pmax = 100m },
-                    new Powerplant { Name = "Gas5", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.45m, Pmin = 10m, Pmax = 100m }
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Gas2", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.6m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Gas3", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.8m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Gas4", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.3m, Pmin = 10m, Pmax = 100m },
+                    new Powerplant { Name = "Gas5", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.45m, Pmin = 10m, Pmax = 100m }
                 },
                 Fuels = _baseFuels
             };
@@ -191,9 +191,9 @@ namespace powerplant_coding_challenge.Tests
                 Load = 125m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m },
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 110m, Pmax = 200m },
-                    new Powerplant { Name = "Gas2", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.8m, Pmin = 80m, Pmax = 150m }
+                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 50m },
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 110m, Pmax = 200m },
+                    new Powerplant { Name = "Gas2", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.8m, Pmin = 80m, Pmax = 150m }
                 },
                 Fuels = _baseFuels
             };
@@ -208,15 +208,15 @@ namespace powerplant_coding_challenge.Tests
         [Fact]
         public async Task Handle_Should_Return_Expected_Results_For_Kerosine_Plant()
         {
-            // Test to ensure that the kerosine (turbojet) plant is utilized correctly.
+            // Test to ensure that the kerosine (TurboJet) plant is utilized correctly.
             var command = new ProductionPlanCommand
             {
                 Load = 100m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.5m, Pmin = 100m, Pmax = 200m },
-                    new Powerplant { Name = "Kerosine1", Type = PowerplantTypeEnumeration.turbojet, Efficiency = 0.5m, Pmin = 0m, Pmax = 200m }
+                    new Powerplant { Name = "Wind1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.5m, Pmin = 100m, Pmax = 200m },
+                    new Powerplant { Name = "Kerosine1", Type = PowerplantTypeEnumeration.TurboJet, Efficiency = 0.5m, Pmin = 0m, Pmax = 200m }
                 },
                 Fuels = _baseFuels
             };
@@ -237,8 +237,8 @@ namespace powerplant_coding_challenge.Tests
                 Load = 150m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.3m, Pmin = 100m, Pmax = 200m },
-                    new Powerplant { Name = "Kerosine1", Type = PowerplantTypeEnumeration.turbojet, Efficiency = 1m, Pmin = 0m, Pmax = 200m }
+                    new Powerplant { Name = "Gas1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.3m, Pmin = 100m, Pmax = 200m },
+                    new Powerplant { Name = "Kerosine1", Type = PowerplantTypeEnumeration.TurboJet, Efficiency = 1m, Pmin = 0m, Pmax = 200m }
                 },
                 Fuels = _baseFuels
             };
@@ -258,9 +258,9 @@ namespace powerplant_coding_challenge.Tests
                 Load = 60m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 20m },
-                    new Powerplant { Name = "gasfired", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.9m, Pmin = 50m, Pmax = 100m },
-                    new Powerplant { Name = "gasfiredinefficient", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.1m, Pmin = 0m, Pmax = 100m }
+                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 20m },
+                    new Powerplant { Name = "GasFired", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.9m, Pmin = 50m, Pmax = 100m },
+                    new Powerplant { Name = "GasFiredinefficient", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.1m, Pmin = 0m, Pmax = 100m }
                 },
                 Fuels = trickyFuels
             };
@@ -269,8 +269,8 @@ namespace powerplant_coding_challenge.Tests
 
             result.Select(x => x.Power).Sum().Should().Be(60m);
             result.First(x => x.Name == "windpark1").Power.Should().Be(0.0m);
-            result.First(x => x.Name == "gasfired").Power.Should().Be(60.0m);
-            result.First(x => x.Name == "gasfiredinefficient").Power.Should().Be(0.0m);
+            result.First(x => x.Name == "GasFired").Power.Should().Be(60.0m);
+            result.First(x => x.Name == "GasFiredinefficient").Power.Should().Be(0.0m);
         }
 
         [Fact]
@@ -283,9 +283,9 @@ namespace powerplant_coding_challenge.Tests
                 Load = 80m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 60m },
-                    new Powerplant { Name = "gasfired", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.9m, Pmin = 50m, Pmax = 100m },
-                    new Powerplant { Name = "gasfiredinefficient", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.1m, Pmin = 0m, Pmax = 200m }
+                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 60m },
+                    new Powerplant { Name = "GasFired", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.9m, Pmin = 50m, Pmax = 100m },
+                    new Powerplant { Name = "GasFiredinefficient", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.1m, Pmin = 0m, Pmax = 200m }
                 },
                 Fuels = trickyFuels
             };
@@ -294,8 +294,8 @@ namespace powerplant_coding_challenge.Tests
 
             result.Select(x => x.Power).Sum().Should().Be(80m);
             result.First(x => x.Name == "windpark1").Power.Should().Be(0.0m);
-            result.First(x => x.Name == "gasfired").Power.Should().Be(80.0m);
-            result.First(x => x.Name == "gasfiredinefficient").Power.Should().Be(0.0m);
+            result.First(x => x.Name == "GasFired").Power.Should().Be(80.0m);
+            result.First(x => x.Name == "GasFiredinefficient").Power.Should().Be(0.0m);
         }
 
         [Fact]
@@ -315,12 +315,12 @@ namespace powerplant_coding_challenge.Tests
                 Load = 480m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "gasfiredbig1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                    new Powerplant { Name = "gasfiredbig2", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                    new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
-                    new Powerplant { Name = "tj1", Type = PowerplantTypeEnumeration.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
-                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                    new Powerplant { Name = "windpark2", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+                    new Powerplant { Name = "GasFiredbig1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                    new Powerplant { Name = "GasFiredbig2", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                    new Powerplant { Name = "GasFiredsomewhatsmaller", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                    new Powerplant { Name = "tj1", Type = PowerplantTypeEnumeration.TurboJet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                    new Powerplant { Name = "windpark2", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
                 },
                 Fuels = exampleFuels
             };
@@ -340,9 +340,9 @@ namespace powerplant_coding_challenge.Tests
             var totalProduction = result.Select(x => x.Power).Sum();
             totalProduction.Should().Be(480m);
 
-            result.First(x => x.Name == "gasfiredbig1").Power.Should().Be(368.4m);
-            result.First(x => x.Name == "gasfiredbig2").Power.Should().Be(0.0m);
-            result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be(0.0m);
+            result.First(x => x.Name == "GasFiredbig1").Power.Should().Be(368.4m);
+            result.First(x => x.Name == "GasFiredbig2").Power.Should().Be(0.0m);
+            result.First(x => x.Name == "GasFiredsomewhatsmaller").Power.Should().Be(0.0m);
             result.First(x => x.Name == "tj1").Power.Should().Be(0.0m);
         }
 
@@ -356,12 +356,12 @@ namespace powerplant_coding_challenge.Tests
                 Load = 480m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "gasfiredbig1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                    new Powerplant { Name = "gasfiredbig2", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                    new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
-                    new Powerplant { Name = "tj1", Type = PowerplantTypeEnumeration.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
-                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                    new Powerplant { Name = "windpark2", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+                    new Powerplant { Name = "GasFiredbig1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                    new Powerplant { Name = "GasFiredbig2", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                    new Powerplant { Name = "GasFiredsomewhatsmaller", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                    new Powerplant { Name = "tj1", Type = PowerplantTypeEnumeration.TurboJet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                    new Powerplant { Name = "windpark2", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
                 },
                 Fuels = exampleFuels
             };
@@ -371,9 +371,9 @@ namespace powerplant_coding_challenge.Tests
             result.Select(x => x.Power).Sum().Should().Be(480m);
             result.First(x => x.Name == "windpark1").Power.Should().Be(0.0m);
             result.First(x => x.Name == "windpark2").Power.Should().Be(0.0m);
-            result.First(x => x.Name == "gasfiredbig1").Power.Should().Be(380.0m);
-            result.First(x => x.Name == "gasfiredbig2").Power.Should().Be(100.0m);
-            result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be(0.0m);
+            result.First(x => x.Name == "GasFiredbig1").Power.Should().Be(380.0m);
+            result.First(x => x.Name == "GasFiredbig2").Power.Should().Be(100.0m);
+            result.First(x => x.Name == "GasFiredsomewhatsmaller").Power.Should().Be(0.0m);
             result.First(x => x.Name == "tj1").Power.Should().Be(0.0m);
         }
 
@@ -387,12 +387,12 @@ namespace powerplant_coding_challenge.Tests
                 Load = 910m,
                 Powerplants =
                 {
-                    new Powerplant { Name = "gasfiredbig1", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                    new Powerplant { Name = "gasfiredbig2", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
-                    new Powerplant { Name = "gasfiredsomewhatsmaller", Type = PowerplantTypeEnumeration.gasfired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
-                    new Powerplant { Name = "tj1", Type = PowerplantTypeEnumeration.turbojet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
-                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
-                    new Powerplant { Name = "windpark2", Type = PowerplantTypeEnumeration.windturbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
+                    new Powerplant { Name = "GasFiredbig1", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                    new Powerplant { Name = "GasFiredbig2", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.53m, Pmin = 100m, Pmax = 460m },
+                    new Powerplant { Name = "GasFiredsomewhatsmaller", Type = PowerplantTypeEnumeration.GasFired, Efficiency = 0.37m, Pmin = 40m, Pmax = 210m },
+                    new Powerplant { Name = "tj1", Type = PowerplantTypeEnumeration.TurboJet, Efficiency = 0.3m, Pmin = 0m, Pmax = 16m },
+                    new Powerplant { Name = "windpark1", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 150m },
+                    new Powerplant { Name = "windpark2", Type = PowerplantTypeEnumeration.WindTurbine, Efficiency = 1m, Pmin = 0m, Pmax = 36m }
                 },
                 Fuels = exampleFuels
             };
@@ -402,9 +402,9 @@ namespace powerplant_coding_challenge.Tests
             result.Select(x => x.Power).Sum().Should().Be(910m);
             result.First(x => x.Name == "windpark1").Power.Should().Be(90.0m);
             result.First(x => x.Name == "windpark2").Power.Should().Be(21.6m);
-            result.First(x => x.Name == "gasfiredbig1").Power.Should().Be(460.0m);
-            result.First(x => x.Name == "gasfiredbig2").Power.Should().Be(338.4m);
-            result.First(x => x.Name == "gasfiredsomewhatsmaller").Power.Should().Be(0.0m);
+            result.First(x => x.Name == "GasFiredbig1").Power.Should().Be(460.0m);
+            result.First(x => x.Name == "GasFiredbig2").Power.Should().Be(338.4m);
+            result.First(x => x.Name == "GasFiredsomewhatsmaller").Power.Should().Be(0.0m);
             result.First(x => x.Name == "tj1").Power.Should().Be(0.0m);
         }
     }

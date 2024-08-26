@@ -12,8 +12,8 @@ public class Powerplant
     {
         return Type switch
         {
-            PowerplantTypeEnumeration.windturbine => CalculateWindProduction(windPercentage),
-            PowerplantTypeEnumeration.gasfired or PowerplantTypeEnumeration.turbojet => CalculateThermalProduction(load),
+            PowerplantTypeEnumeration.WindTurbine => CalculateWindProduction(windPercentage),
+            PowerplantTypeEnumeration.GasFired or PowerplantTypeEnumeration.TurboJet => CalculateThermalProduction(load),
             _ => throw new NotImplementedException($"Production calculation for {Type} is not implemented.")
         };
     }
@@ -32,9 +32,9 @@ public class Powerplant
     {
         return Type switch
         {
-            PowerplantTypeEnumeration.gasfired => fuels.Gas * (1 / Efficiency),
-            PowerplantTypeEnumeration.turbojet => fuels.Kerosine * (1 / Efficiency),
-            PowerplantTypeEnumeration.windturbine => 0m,
+            PowerplantTypeEnumeration.GasFired => fuels.Gas * (1 / Efficiency),
+            PowerplantTypeEnumeration.TurboJet => fuels.Kerosine * (1 / Efficiency),
+            PowerplantTypeEnumeration.WindTurbine => 0m,
             _ => throw new NotImplementedException($"Cost calculation for {Type} is not implemented.")
         };
     }

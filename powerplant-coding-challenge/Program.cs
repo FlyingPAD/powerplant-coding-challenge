@@ -1,6 +1,6 @@
 using FluentValidation;
 using powerplant_coding_challenge.Features;
-using powerplant_coding_challenge.Middleware;
+using powerplant_coding_challenge.Middlewares;
 using powerplant_coding_challenge.Services;
 using Serilog;
 using System.Reflection;

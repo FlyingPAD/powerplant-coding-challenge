@@ -26,16 +26,9 @@ public class ProductionPlanCommandHandler(ProductionPlanService productionManage
         // Generate Production Plan
         var response = _productionManager.GenerateProductionPlan(command);
 
-        // Log each powerplant's production
-        foreach (var plantResponse in response)
-        {
-            Log.Information("Powerplant {Name} will produce {Power} MWh.", plantResponse.Name, plantResponse.Power);
-        }
-
         // Calculate and log total production and cost
         var totalProduction = response.Sum(r => r.Power);
         var totalCost = response.Sum(r => r.Power * command.Fuels.Gas);
-
         LoggingHelper.LogFinalSummary(totalProduction, totalCost);
 
         return response;

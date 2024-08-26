@@ -1,6 +1,6 @@
 ﻿using powerplant_coding_challenge.Helpers;
 
-namespace powerplant_coding_challenge.Middleware;
+namespace powerplant_coding_challenge.Middlewares;
 
 public class LoggingMiddleware(RequestDelegate next)
 {
