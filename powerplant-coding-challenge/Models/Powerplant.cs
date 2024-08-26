@@ -12,32 +12,19 @@ public class Powerplant
     {
         return Type switch
         {
-            PowerplantTypeEnumeration.windturbine => CalculateWindProduction(load, windPercentage),
+            PowerplantTypeEnumeration.windturbine => CalculateWindProduction(windPercentage),
             PowerplantTypeEnumeration.gasfired or PowerplantTypeEnumeration.turbojet => CalculateThermalProduction(load),
             _ => throw new NotImplementedException($"Production calculation for {Type} is not implemented.")
         };
     }
 
-    private decimal CalculateWindProduction(decimal load, decimal windPercentage)
+    private decimal CalculateWindProduction(decimal windPercentage)
     {
-        if (windPercentage == 0)
-        {
-            return 0m;
-        }
-
-        decimal potentialProduction = Pmax * (windPercentage / 100.0m);
-
-        if (potentialProduction > load)
-        {
-            return 0m;
-        }
-
-        return Math.Min(potentialProduction, load);
+        return Pmax * (windPercentage / 100m);
     }
 
     private decimal CalculateThermalProduction(decimal load)
     {
-        if (load < Pmin) return 0m;
         return Math.Min(Pmax, load);
     }
 
