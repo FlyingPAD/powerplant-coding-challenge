@@ -1,113 +1,84 @@
 ﻿using powerplant_coding_challenge.Models;
 using Serilog;
 
-namespace powerplant_coding_challenge.Helpers
+namespace powerplant_coding_challenge.Helpers;
+
+public static class LoggingHelper
 {
-    public static class LoggingHelper
+    public static async Task LogRequestAsync(HttpContext context)
     {
-        public static async Task LogRequestAsync(HttpContext context)
+        context.Request.EnableBuffering();
+
+        using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
+        var requestBody = await reader.ReadToEndAsync();
+        context.Request.Body.Position = 0;
+
+        Log.Information($"Request Body: {requestBody}");
+    }
+
+    public static async Task<string> LogResponseAsync(HttpContext context)
+    {
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var responseBodyText = await new StreamReader(context.Response.Body).ReadToEndAsync();
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+
+        Log.Information($"Response Body: {responseBodyText}");
+        return responseBodyText;
+    }
+
+    public static void LogSortedPowerplantsByCost(IEnumerable<Powerplant> powerplants, Fuels fuels)
+    {
+        Log.Information("Listing powerplants sorted by cost:");
+
+        foreach (var powerplant in powerplants)
         {
-            context.Request.EnableBuffering();
-
-            using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
-            var requestBody = await reader.ReadToEndAsync();
-            context.Request.Body.Position = 0;
-
-            Log.Information("Request Body: {RequestBody}", requestBody);
+            var costPerMWh = powerplant.CalculateCostPerMWh(fuels);
+            Log.Information($"  - {powerplant.Name}: Cost per MWh = {costPerMWh:F2} EUR/MWh");
         }
+    }
 
-        public static async Task<string> LogResponseAsync(HttpContext context)
+    public static void LogPowerplantEvaluation(Powerplant powerplant, decimal production, decimal windPercentage)
+    {
+        if (powerplant.Type == PowerplantTypeEnumeration.WindTurbine)
         {
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var responseBodyText = await new StreamReader(context.Response.Body).ReadToEndAsync();
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-
-            Log.Information("Response Body: {ResponseBody}", responseBodyText);
-            return responseBodyText;
+            Log.Information($@"
+                    => Evaluating {powerplant.Name}:
+                    - Type: {powerplant.Type}
+                    - Pmin: {powerplant.Pmin} MW
+                    - Pmax: {powerplant.Pmax} MW
+                    - Efficiency: {powerplant.Efficiency:F2}
+                    - Producing: {production} MWh @ {windPercentage}% wind");
         }
-
-        public static void LogSortedPowerplantsByCost(IEnumerable<Powerplant> powerplants, Fuels fuels)
+        else
         {
-            Log.Information("Listing powerplants sorted by cost:");
-
-            foreach (var powerplant in powerplants)
-            {
-                var costPerMWh = powerplant.CalculateCostPerMWh(fuels);
-                Log.Information(
-                    "  - {PlantName}: Cost per MWh = {CostPerMWh:F2} EUR/MWh",
-                    powerplant.Name, costPerMWh
-                );
-            }
+            Log.Information($@"
+                    => Evaluating {powerplant.Name}:
+                    - Type: {powerplant.Type}
+                    - Pmin: {powerplant.Pmin} MW
+                    - Pmax: {powerplant.Pmax} MW
+                    - Efficiency: {powerplant.Efficiency:F2}
+                    - Producing: {production} MWh");
         }
+    }
 
-        public static void LogPowerplantEvaluation(Powerplant powerplant, decimal production, decimal windPercentage)
-        {
-            if (powerplant.Type == PowerplantTypeEnumeration.windturbine)
-            {
-                Log.Information(
-                    " => Evaluating {PlantName}:\n" +
-                    "  - Type: {Type} \n" +
-                    "  - Pmin: {Pmin} MW \n" +
-                    "  - Pmax: {Pmax} MW \n" +
-                    "  - Efficiency: {Efficiency:F2} \n" +
-                    "  - Producing: {Production} MWh @ {Wind}% wind",
-                    powerplant.Name, powerplant.Type, powerplant.Pmin, powerplant.Pmax, powerplant.Efficiency,
-                    production, windPercentage
-                );
-            }
-            else
-            {
-                Log.Information(
-                    " => Evaluating {PlantName}:\n" +
-                    "  - Type: {Type} \n" +
-                    "  - Pmin: {Pmin} MW \n" +
-                    "  - Pmax: {Pmax} MW \n" +
-                    "  - Efficiency: {Efficiency:F2} \n" +
-                    "  - Producing: {Production} MWh",
-                    powerplant.Name, powerplant.Type, powerplant.Pmin, powerplant.Pmax, powerplant.Efficiency,
-                    production
-                );
-            }
-        }
+    public static void LogFinalSummary(decimal totalProduction, decimal totalCost)
+    {
+        Log.Information($" -> Load Processed: {totalProduction:F1} MWh | Total Cost: {totalCost:F2} EUR/h");
+    }
 
-        public static void LogFinalSummary(decimal totalProduction, decimal totalCost)
-        {
-            Log.Information(" -> Load Processed: {TotalLoad:F1} MWh | Total Cost: {TotalCost:F2} EUR/h", totalProduction, totalCost);
-        }
+    public static void LogSkippedWindPlant(Powerplant plant, decimal remainingLoad, decimal windProduction, bool isWindBeneficial)
+    {
+        Log.Information($@"
+                Skipping Wind Plant {plant.Name}:
+                - Remaining Load = {remainingLoad} MWh
+                - Potential Wind Production = {windProduction} MWh
+                - Is Wind Beneficial: {isWindBeneficial}");
+    }
 
-        public static void LogRemainingLoadError(decimal remainingLoad)
-        {
-            Log.Error("The remaining load after allocation is not zero: {RemainingLoad} MWh. An exception will be thrown.", remainingLoad);
-        }
-
-        public static void LogSkippedWindPlant(Powerplant plant, decimal remainingLoad, decimal windProduction, bool isWindBeneficial)
-        {
-            Log.Information(
-                "Skipping Wind Plant {PlantName}:\n" +
-                "  - Remaining Load = {RemainingLoad} MWh\n" +
-                "  - Potential Wind Production = {WindProduction} MWh\n" +
-                "  - Is Wind Beneficial: {IsWindBeneficial}",
-                plant.Name, remainingLoad, windProduction, isWindBeneficial
-            );
-        }
-
-        public static void LogThermalAllocationCheck(Powerplant plant, decimal remainingLoad, string reason)
-        {
-            Log.Information(
-                "Checking thermal allocation for {PlantName}:\n" +
-                "  - Remaining Load = {RemainingLoad} MWh\n" +
-                "  - Reason: {Reason}",
-                plant.Name, remainingLoad, reason
-            );
-        }
-
-        public static void LogThermalAllocation(Powerplant plant, decimal production, decimal remainingLoad)
-        {
-            Log.Information(
-                "Thermal Allocation: {PlantName} allocated {Production} MWh\n" +
-                "  - Remaining Load after = {RemainingLoad} MWh",
-                plant.Name, production, remainingLoad
-            );
-        }
+    public static void LogThermalAllocation(Powerplant plant, decimal production, decimal remainingLoad)
+    {
+        Log.Information($@"
+                Thermal Allocation: {plant.Name} allocated {production} MWh
+                - Remaining Load after = {remainingLoad} MWh");
     }
 }

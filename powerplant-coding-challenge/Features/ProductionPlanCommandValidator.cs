@@ -40,18 +40,18 @@ public class ProductionPlanCommandValidator : AbstractValidator<ProductionPlanCo
                     .GreaterThan(powerplant => powerplant.Pmin)
                     .WithMessage("Pmax must be > Pmin.");
 
-                plant.When(powerplant => powerplant.Type == PowerplantTypeEnumeration.windturbine, () =>
+                plant.When(powerplant => powerplant.Type == PowerplantTypeEnumeration.WindTurbine, () =>
                 {
                     plant.RuleFor(powerplant => powerplant.Efficiency)
                         .Equal(1)
-                        .WithMessage("Efficiency for windturbine must be 1.");
+                        .WithMessage("Efficiency for WindTurbine must be 1.");
                 });
 
-                plant.When(powerplant => powerplant.Type == PowerplantTypeEnumeration.gasfired || powerplant.Type == PowerplantTypeEnumeration.turbojet, () =>
+                plant.When(powerplant => powerplant.Type == PowerplantTypeEnumeration.GasFired || powerplant.Type == PowerplantTypeEnumeration.TurboJet, () =>
                 {
                     plant.RuleFor(powerplant => powerplant.Efficiency)
                         .GreaterThan(0.01m)
-                        .WithMessage("Efficiency for gasfired or turbojet must be greater than 0.01.");
+                        .WithMessage("Efficiency for GasFired or TurboJet must be greater than 0.01.");
                 });
             });
 

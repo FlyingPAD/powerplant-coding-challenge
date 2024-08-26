@@ -6,7 +6,8 @@ public class ProductionPlanValidatorService
 {
     public void ValidateTotalCapacity(List<Powerplant> powerplants, decimal load)
     {
-        decimal totalCapacity = powerplants.Sum(p => p.Pmax);
+        var totalCapacity = powerplants.Sum(powerplant => powerplant.Pmax);
+
         if (load > totalCapacity)
         {
             throw new InvalidOperationException("The requested load exceeds the total capacity of the available power plants.");
@@ -15,8 +16,8 @@ public class ProductionPlanValidatorService
 
     public void ValidateLoadAgainstPmin(List<Powerplant> powerplants, decimal load)
     {
-        bool isLoadBelowAllPmin = powerplants
-            .Where(p => p.Type != PowerplantTypeEnumeration.windturbine)
+        var isLoadBelowAllPmin = powerplants
+            .Where(p => p.Type != PowerplantTypeEnumeration.WindTurbine)
             .All(p => load < p.Pmin);
 
         if (isLoadBelowAllPmin)

@@ -4,7 +4,7 @@ using Serilog;
 using Serilog.Context;
 using System.Text.Json;
 
-namespace powerplant_coding_challenge.Middleware;
+namespace powerplant_coding_challenge.Middlewares;
 
 public class ExceptionsMiddleware(RequestDelegate next)
 {

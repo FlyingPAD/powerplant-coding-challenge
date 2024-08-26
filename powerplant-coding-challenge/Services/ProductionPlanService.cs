@@ -13,7 +13,7 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
         // Validation.
         if (command.Powerplants.Count == 0 || command.Load == 0)
         {
-            return command.Powerplants.Select(p => new ProductionPlanCommandResponse(p.Name, 0m)).ToList();
+            return command.Powerplants.Select(powerplant => new ProductionPlanCommandResponse(powerplant.Name, 0m)).ToList();
         }
         _validator.ValidateTotalCapacity(command.Powerplants, command.Load);
         _validator.ValidateLoadAgainstPmin(command.Powerplants, command.Load);
@@ -89,8 +89,8 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
     private static void AllocateWindPower(List<Powerplant> powerplants, ref decimal remainingLoad, List<ProductionPlanCommandResponse> response, decimal windPercentage)
     {
-        var windPlants = powerplants.Where(powerplant => powerplant.Type == PowerplantTypeEnumeration.windturbine).ToList();
-        var thermalPlants = powerplants.Where(powerplant => powerplant.Type != PowerplantTypeEnumeration.windturbine).ToList();
+        var windPlants = powerplants.Where(powerplant => powerplant.Type == PowerplantTypeEnumeration.WindTurbine).ToList();
+        var thermalPlants = powerplants.Where(powerplant => powerplant.Type != PowerplantTypeEnumeration.WindTurbine).ToList();
 
         foreach (var plant in windPlants)
         {
@@ -131,7 +131,7 @@ public class ProductionPlanService(ProductionPlanValidatorService validator)
 
     private static void AllocateThermalPower(List<Powerplant> powerplants, ref decimal remainingLoad, List<ProductionPlanCommandResponse> response)
     {
-        var thermalPlants = powerplants.Where(powerplant => powerplant.Type != PowerplantTypeEnumeration.windturbine).ToList();
+        var thermalPlants = powerplants.Where(powerplant => powerplant.Type != PowerplantTypeEnumeration.WindTurbine).ToList();
 
         foreach (var currentPlant in thermalPlants)
         {
