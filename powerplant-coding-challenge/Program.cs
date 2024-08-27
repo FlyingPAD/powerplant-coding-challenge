@@ -38,10 +38,10 @@ public class Program
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //builder.WebHost.ConfigureKestrel(options =>
-            //{
-            //    options.ListenAnyIP(8888); 
-            //});
+            builder.WebHost.UseKestrel(options =>
+            {
+                options.ListenAnyIP(8888);
+            });
 
             var app = builder.Build();
 

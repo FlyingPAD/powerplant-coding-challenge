@@ -23,7 +23,7 @@ This project is an ASP.NET Core web application that calculates and allocates po
 
    dotnet run
 
-4. **Access the application** at `http://localhost:8888`.
+4. **Access the application** at `http://localhost:8888/swagger/index.html`.
 
 ### Running via Docker
 
@@ -35,7 +35,7 @@ This project is an ASP.NET Core web application that calculates and allocates po
 
    docker run -d -p 8888:8888 powerplant-coding-challenge
 
-3. **Access the application** at `http://localhost:8888`.
+3. **Access the application** at `http://localhost:8888/swagger/index.html`.
 
 ## Notes
 
